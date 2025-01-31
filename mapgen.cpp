@@ -2,8 +2,17 @@
 #include <cstdlib>
 #include <ctime>
 
-Map::Map(int w, int h) : width(w), height(h), entrySet(false), exitSet(false) {
-    grid.resize(height, vector<CellType>(width, SCENERY));
+Map::Map(int w, int h) {
+    width = w;
+    height = h;
+    entrySet = false;
+    exitSet = false;
+
+    // Create a 2D grid filled with scenery
+    grid.resize(height);
+    for (int y = 0; y < height; y++) {
+        grid[y].resize(width, SCENERY);
+    }
 }
 
 void Map::setPath(int x, int y) {
@@ -85,7 +94,7 @@ bool Map::isPathConnected() {
 }
 
 void Map::generateRandomMap() {
-    srand(time(0));
+    srand(time(0)); //set random number generator using the current time
 
     int entryX = 0, entryY = rand() % height;
     int exitX = width - 1, exitY = rand() % height;
@@ -94,7 +103,11 @@ void Map::generateRandomMap() {
     exitPoint = {exitX, exitY};
     entrySet = exitSet = true;
 
-    for (auto& row : grid) fill(row.begin(), row.end(), SCENERY);
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            grid[y][x] = SCENERY;
+        }
+    }
 
     int x = entryX, y = entryY;
     grid[y][x] = PATH;
