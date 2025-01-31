@@ -49,8 +49,8 @@ cmake_ninja_workdir = C$:/Users/amann/CLionProjects/TowerDefence/cmake-build-deb
 
 build cmake_object_order_depends_target_TowerDefence: phony || .
 
-build CMakeFiles/TowerDefence.dir/main.cpp.obj: CXX_COMPILER__TowerDefence_unscanned_Debug C$:/Users/amann/CLionProjects/TowerDefence/main.cpp || cmake_object_order_depends_target_TowerDefence
-  DEP_FILE = CMakeFiles\TowerDefence.dir\main.cpp.obj.d
+build CMakeFiles/TowerDefence.dir/driver.cpp.obj: CXX_COMPILER__TowerDefence_unscanned_Debug C$:/Users/amann/CLionProjects/TowerDefence/driver.cpp || cmake_object_order_depends_target_TowerDefence
+  DEP_FILE = CMakeFiles\TowerDefence.dir\driver.cpp.obj.d
   FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   OBJECT_DIR = CMakeFiles\TowerDefence.dir
   OBJECT_FILE_DIR = CMakeFiles\TowerDefence.dir
@@ -69,7 +69,7 @@ build CMakeFiles/TowerDefence.dir/mapgen.cpp.obj: CXX_COMPILER__TowerDefence_uns
 #############################################
 # Link the executable TowerDefence.exe
 
-build TowerDefence.exe: CXX_EXECUTABLE_LINKER__TowerDefence_Debug CMakeFiles/TowerDefence.dir/main.cpp.obj CMakeFiles/TowerDefence.dir/mapgen.cpp.obj
+build TowerDefence.exe: CXX_EXECUTABLE_LINKER__TowerDefence_Debug CMakeFiles/TowerDefence.dir/driver.cpp.obj CMakeFiles/TowerDefence.dir/mapgen.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\TowerDefence.dir
