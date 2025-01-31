@@ -1,0 +1,3 @@
+C:/Users/amann/CLionProjects/TowerDefence/cmake-build-debug/CMakeFiles/TowerDefence.dir
+C:/Users/amann/CLionProjects/TowerDefence/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/amann/CLionProjects/TowerDefence/cmake-build-debug/CMakeFiles/rebuild_cache.dir

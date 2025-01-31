@@ -1,0 +1,5 @@
+# ninja log v6
+6	552	7599098924184847	CMakeFiles/TowerDefence.dir/main.cpp.obj	ab90bae5ead49fd7
+839	1056	7599098932519037	TowerDefence.exe	3c799436dc2c77e8
+2	313	7600365378599774	build.ninja	614600764326126d
+20	839	7599098924330054	CMakeFiles/TowerDefence.dir/mapgen.cpp.obj	4b1c26520ba3e21d
