@@ -7,27 +7,30 @@
 
 using namespace std;
 
-enum CellType { SCENERY, PATH };
+// Defines the possible cell types in the map
+enum CellType { SCENERY, PATH };  // SCENERY is where towers can be placed, PATH is where critters can move
 
 class Map {
 private:
-    int width, height;
-    vector<vector<CellType>> grid;
-    pair<int, int> entryPoint;
-    pair<int, int> exitPoint;
-    bool entrySet, exitSet;
+    int width, height;                    // Dimensions of the map
+    vector<vector<CellType>> grid;        // 2D grid representing the map
+    pair<int, int> entryPoint;            // Starting point for critters
+    pair<int, int> exitPoint;             // End point for critters
+    bool entrySet, exitSet;               // Flags to track if entry/exit are set
 
-    bool isValidCoordinate(int x, int y);
-    bool isPathConnected();
+    // Helper functions
+    bool isValidCoordinate(int x, int y); // Checks if coordinates are within map bounds
+    bool isPathConnected();               // Checks if there's a valid path from entry to exit
 
 public:
-    Map(int w, int h);
-    void setPath(int x, int y);
-    void setEntry(int x, int y);
-    void setExit(int x, int y);
-    void display();
-    bool validateMap();
-    void generateRandomMap();
+    // Constructor and member functions
+    Map(int w, int h);                    // Creates a map of given width and height
+    void setPath(int x, int y);           // Marks a cell as PATH
+    void setEntry(int x, int y);          // Sets the entry point
+    void setExit(int x, int y);           // Sets the exit point
+    void display();                       // Prints the map to console
+    bool validateMap();                   // Checks if the map is valid
+    void generateRandomMap();             // Creates a random valid map
 };
 
 #endif // MAPGEN_H
