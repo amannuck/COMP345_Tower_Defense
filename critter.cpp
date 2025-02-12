@@ -18,10 +18,33 @@ void Critter::move() {
         return;
     }
 
+    pair<int, int> exitPoint = map->getExit();
+
     // Move towards exit point
     for (int moves = 0; moves < speed; moves++) {
-        //TODO
-        
+        // Check if we are at the exit
+        if(position.first == exitPoint.first && position.second == exitPoint.second) {
+            reachedExit = true;
+            return;
+        }
+
+        // Move one unit closer to the exit
+        pair<int, int> nextPosition = position;
+        if (position.first < exitPoint.first && map->isPath(position.first + 1, position.second)) { // move to the right if possible
+            nextPosition.first++;
+        }
+        else if (position.second < exitPoint.second && map->isPath(position.first, position.second + 1)) { // move down if possible
+            nextPosition.second++;
+        }
+        else if (position.second > exitPoint.second && map->isPath(position.first, position.second - 1)) { // move up if possible
+            nextPosition.second--;
+        }
+        else {
+            break; // no valid moves
+        }
+
+        // Update position
+        position = nextPosition;
     }
 
 }

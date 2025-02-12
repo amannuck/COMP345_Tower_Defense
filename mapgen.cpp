@@ -77,7 +77,7 @@ bool Map::validateMap() {
 }
 
 // Checks if coordinates are within map boundaries
-bool Map::isValidCoordinate(int x, int y) {
+bool Map::isValidCoordinate(int x, int y) const {
     return x >= 0 && x < width && y >= 0 && y < height;
 }
 
@@ -183,4 +183,12 @@ void Map::generateRandomMap() {
 
         grid[y][x] = PATH;  // Mark the cell as path
     }
+}
+
+// Checks if a cell is a PATH cell
+bool Map::isPath(int x, int y) const {
+    if (!isValidCoordinate(x, y)) {
+        return false;
+    }
+    return grid[x][y] == PATH;
 }
