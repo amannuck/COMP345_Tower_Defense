@@ -28,6 +28,7 @@ public:
     void setPath(int x, int y);           // Marks a cell as PATH
     void setEntry(int x, int y);          // Sets the entry point
     void setExit(int x, int y);           // Sets the exit point
+    pair<int, int> getExit() const;             // Returns the exit point
     void display();                       // Prints the map to console
     bool validateMap();                   // Checks if the map is valid
     void generateRandomMap();             // Creates a random valid map

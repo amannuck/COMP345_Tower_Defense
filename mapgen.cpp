@@ -44,6 +44,11 @@ void Map::setExit(int x, int y) {
     }
 }
 
+// Returns the exit point coordinates
+pair<int, int> Map::getExit() const {
+    return exitPoint;
+}
+
 // Displays the map
 void Map::display() {
     cout << "Map Layout:\n";
