@@ -4,6 +4,7 @@
 using namespace std;
 #include <vector>
 #include <queue>
+#include <cmath>
 #include "critter.h"
 #include "mapgen.h"
 

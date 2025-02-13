@@ -195,5 +195,5 @@ bool Map::isPath(int x, int y) const {
     if (!isValidCoordinate(x, y)) {
         return false;
     }
-    return grid[x][y] == PATH;
+    return grid[y][x] == PATH;
 }

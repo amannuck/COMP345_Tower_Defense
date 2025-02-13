@@ -8,18 +8,24 @@ CritterGroup::CritterGroup(const Map* map)
 
 tuple<int, int, int, int> CritterGroup::calculateCritterStats(int waveNum) {
     // Base stats
-    int baseHP = 100;
-    int baseStrength = 10;
-    int baseSpeed = 1;
-    int baseReward = 20;
+    double baseHP = 100.0;
+    double baseStrength = 10.0;
+    double baseSpeed = 1.0;
+    double baseReward = 20.0;
 
     // Scale stats with wave number
-    float scaleFactor = 1.0f + (waveNum * 0.1f); // 10% increase per wave
+    double scaleFactor = 1.0 + (waveNum * 0.1); // 10% increase per wave
     
-    int hp = static_cast<int>(baseHP * scaleFactor);
-    int strength = static_cast<int>(baseStrength * scaleFactor);
-    int speed = baseSpeed + (waveNum / 5); // Increase speed every 5 waves
-    int reward = static_cast<int>(baseReward * scaleFactor);
+    int hp = static_cast<int>(std::lround(baseHP * scaleFactor));
+    int strength = static_cast<int>(std::lround(baseStrength * scaleFactor));
+    int speed = static_cast<int>(std::lround(baseSpeed + (waveNum / 5.0))); // Increase speed every 5 waves
+    int reward = static_cast<int>(std::lround(baseReward * scaleFactor));
+
+    // Ensure minimum values
+    hp = max(hp, 1);
+    strength = max(strength, 1);
+    speed = max(speed, 1);
+    reward = max(reward, 1);
 
     return make_tuple(hp, strength, speed, reward);
 }
