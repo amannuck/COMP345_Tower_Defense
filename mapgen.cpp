@@ -44,6 +44,11 @@ void Map::setExit(int x, int y) {
     }
 }
 
+// Returns the entry point coordinates
+pair<int, int> Map::getEntry() const {
+    return entryPoint;
+}
+
 // Returns the exit point coordinates
 pair<int, int> Map::getExit() const {
     return exitPoint;
