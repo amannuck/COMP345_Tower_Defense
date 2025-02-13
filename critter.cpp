@@ -1,7 +1,7 @@
 #include "critter.h"
 
 // Constructor: Initialize critter with given stats and position
-Critter::Critter(int hp, int str, int spd, int lvl, int rwd, Position pos) {
+Critter::Critter(int hp, int str, int spd, int lvl, int rwd, pair<int, int> pos, const Map* gameMap) {
     hitPoints = hp;
     strength = str;
     speed = spd;
@@ -9,11 +9,44 @@ Critter::Critter(int hp, int str, int spd, int lvl, int rwd, Position pos) {
     reward = rwd;
     position = pos;
     reachedExit = false;
+    map = gameMap;
 }
 
 // Move the critter towards the exit point 
 void Critter::move() {
-    //TODO
+    if (reachedExit || isDead()) {
+        return;
+    }
+
+    pair<int, int> exitPoint = map->getExit();
+
+    // Move towards exit point
+    for (int moves = 0; moves < speed; moves++) {
+        // Check if we are at the exit
+        if(position.first == exitPoint.first && position.second == exitPoint.second) {
+            reachedExit = true;
+            return;
+        }
+
+        // Move one unit closer to the exit
+        pair<int, int> nextPosition = position;
+        if (position.first < exitPoint.first && map->isPath(position.first + 1, position.second)) { // move to the right if possible
+            nextPosition.first++;
+        }
+        else if (position.second < exitPoint.second && map->isPath(position.first, position.second + 1)) { // move down if possible
+            nextPosition.second++;
+        }
+        else if (position.second > exitPoint.second && map->isPath(position.first, position.second - 1)) { // move up if possible
+            nextPosition.second--;
+        }
+        else {
+            break; // no valid moves
+        }
+
+        // Update position
+        position = nextPosition;
+    }
+
 }
 
 // Reduce hit points by the given damage amount
@@ -45,10 +78,9 @@ int Critter::getReward() const {
 bool Critter::hasReachedExit() const {
     return reachedExit;
 }
-Critter::Position Critter::getPosition() const {
+pair<int, int> Critter::getPosition() const {
     return position;
 }
 void Critter::setPosition(int x, int y) {
-    position.x = x;
-    position.y = y;
+    position = make_pair(x, y);
 }
