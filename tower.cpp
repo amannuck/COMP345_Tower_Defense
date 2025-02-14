@@ -103,4 +103,3 @@ bool TowerManager::sellTower(int x, int y) {
 void TowerManager::updateTowers(vector<Critter>& critters) {
     for (Tower* tower : towers) tower->attack(critters);
 }
-
