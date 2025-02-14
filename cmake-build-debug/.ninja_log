@@ -1,9 +1,12 @@
 # ninja log v6
+4	409	7612045112978731	CMakeFiles/TowerDefence.dir/critter.cpp.obj	9c964f413f3da4b1
 6	552	7599098924184847	CMakeFiles/TowerDefence.dir/main.cpp.obj	ab90bae5ead49fd7
-728	874	7600374916432741	TowerDefence.exe	b4656a18ee87b910
-3	275	7600606139534185	build.ninja	614600764326126d
-14	728	7600374909288534	CMakeFiles/TowerDefence.dir/mapgen.cpp.obj	4b1c26520ba3e21d
-4	503	7600374909188545	CMakeFiles/TowerDefence.dir/driver.cpp.obj	bedb5e5a9cdd5aac
-17	963	7602555362219162	CMakeFiles/TowerDefence.dir/driver.cpp.obj	bedb5e5a9cdd5aac
-32	1390	7602555362359133	CMakeFiles/TowerDefence.dir/mapgen.cpp.obj	4b1c26520ba3e21d
-1391	1655	7602555375947747	TowerDefence.exe	b4656a18ee87b910
+704	849	7612045119980251	TowerDefence.exe	662325b996c2f949
+2	203	7612660135388832	build.ninja	614600764326126d
+4	784	7611898880346651	CMakeFiles/TowerDefence.dir/mapgen.cpp.obj	4b1c26520ba3e21d
+3	806	7612038987299507	CMakeFiles/TowerDefence.dir/driver.cpp.obj	bedb5e5a9cdd5aac
+7	704	7612045113009055	CMakeFiles/TowerDefence.dir/CritterGroup.cpp.obj	c03e3939ffede2aa
+2	266	7612660135388832	build.ninja	614600764326126d
+7	543	7612660135738865	CMakeFiles/TowerDefence.dir/tower.cpp.obj	13b02f3195af45c6
+4	816	7612660135708851	CMakeFiles/TowerDefence.dir/driver.cpp.obj	bedb5e5a9cdd5aac
+816	1009	7612660143826812	TowerDefence.exe	528a5d4c63032371

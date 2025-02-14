@@ -2,11 +2,12 @@
 #include <cmath>
 #include <algorithm>
 
-CritterGroup::CritterGroup(const Map* map) 
+
+CritterGroup::CritterGroup(const Map* map)
     : waveNum(0), map(map) {
 }
 
-tuple<int, int, int, int> CritterGroup::calculateCritterStats(int waveNum) {
+std::tuple<int, int, int, int> CritterGroup::calculateCritterStats(int waveNum) {
     // Base stats
     double baseHP = 100.0;
     double baseStrength = 10.0;
@@ -15,7 +16,7 @@ tuple<int, int, int, int> CritterGroup::calculateCritterStats(int waveNum) {
 
     // Scale stats with wave number
     double scaleFactor = 1.0 + (waveNum * 0.1); // 10% increase per wave
-    
+
     int hp = static_cast<int>(std::lround(baseHP * scaleFactor));
     int strength = static_cast<int>(std::lround(baseStrength * scaleFactor));
     int speed = static_cast<int>(std::lround(baseSpeed + (waveNum / 5.0))); // Increase speed every 5 waves
@@ -32,10 +33,10 @@ tuple<int, int, int, int> CritterGroup::calculateCritterStats(int waveNum) {
 
 int CritterGroup::generateWave() {
     waveNum++;
-    
+
     // Calculate number of critters for this wave
     int numCritters = 5 + (waveNum * 2); // Base 5 critters + 2 per wave
-    
+
     // Clear any remaining critters from previous wave
     activeCritters.clear();
     while (!spawnQueue.empty()) {
@@ -48,7 +49,7 @@ int CritterGroup::generateWave() {
     // Generate critters with scaled stats
     for (int i = 0; i < numCritters; i++) {
         auto [hp, strength, speed, reward] = calculateCritterStats(waveNum);
-        
+
         // Create critter with calculated stats
         Critter newCritter(
             hp,            // Hit Points
@@ -59,7 +60,7 @@ int CritterGroup::generateWave() {
             entryPoint,    // Starting position
             map            // Map reference
         );
-        
+
         // Add to spawn queue
         spawnQueue.push(newCritter);
     }
@@ -67,11 +68,11 @@ int CritterGroup::generateWave() {
     return numCritters;
 }
 
-void CritterGroup::moveAllCritters(function<void(int)> onCritterExit) {
+void CritterGroup::moveAllCritters(std::function<void(int)> onCritterExit) {
     for (auto it = activeCritters.begin(); it != activeCritters.end();) {
         // Move the critter
         it->move();
-        
+
         // Check if critter reached exit
         if (it->hasReachedExit()) {
             onCritterExit(it->getStrength());
@@ -94,7 +95,7 @@ bool CritterGroup::spawnNextCritter() {
     return true;
 }
 
-bool CritterGroup::processCritterHit(size_t critterIndex, int damage, function<void(int)> onCritterDeath) {
+bool CritterGroup::processCritterHit(size_t critterIndex, int damage, std::function<void(int)> onCritterDeath) {
     if (critterIndex >= activeCritters.size()) {
         return false;
     }
@@ -111,7 +112,7 @@ bool CritterGroup::processCritterHit(size_t critterIndex, int damage, function<v
     return false;
 }
 
-void CritterGroup::removeDeadCritters(function<void(int)> onCritterDeath) {
+void CritterGroup::removeDeadCritters(std::function<void(int)> onCritterDeath) {
     auto it = activeCritters.begin();
     while (it != activeCritters.end()) {
         if (it->isDead()) {

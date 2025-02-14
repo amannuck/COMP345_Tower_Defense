@@ -23,3 +23,4 @@ SlowTower::SlowTower(int x, int y) : Tower(x, y, 150, 75, 4, 5, 1) {}
 
 void SlowTower::attack() {
     cout << "SlowTower at (" << x << ", " << y << ") attacks a target and slows it down.\n";
+}

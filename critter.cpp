@@ -12,7 +12,7 @@ Critter::Critter(int hp, int str, int spd, int lvl, int rwd, pair<int, int> pos,
     map = gameMap;
 }
 
-// Move the critter towards the exit point 
+// Move the critter towards the exit point
 void Critter::move() {
     if (reachedExit || isDead()) {
         return;
