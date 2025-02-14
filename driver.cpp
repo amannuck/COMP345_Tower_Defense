@@ -2,24 +2,24 @@
 #include "critter.h"
 #include "tower.h"
 #include "CritterGroup.h"
+#include "towerManager.h"
 #include <iostream>
 #include <chrono>
 #include <thread>
 
-// Test function to display map with critters
-void displayMapWithCritters(const Map& map, const vector<Critter>& critters) {
-    // Clear screen
-    // cout << "\033[2J\033[1;1H";
+using namespace std;
 
-    // Get map entry and exit points
+// Display map with both critters and towers
+void displayMapWithCrittersAndTowers(const Map& map, const vector<Critter>& critters, const TowerManager& manager) {
     auto entry = map.getEntry();
     auto exit = map.getExit();
 
-    // Display the map with critters
     for (int y = 0; y < 10; y++) {
         for (int x = 0; x < 10; x++) {
             bool hasCritter = false;
-            // Check if there's a critter at this position
+            bool hasTower = false;
+
+            // Check if a critter is at this position
             for (const auto& critter : critters) {
                 if (critter.getPosition() == make_pair(x, y)) {
                     cout << "C ";
@@ -27,7 +27,20 @@ void displayMapWithCritters(const Map& map, const vector<Critter>& critters) {
                     break;
                 }
             }
+
+            // Check if a tower is at this position
             if (!hasCritter) {
+                for (const auto& tower : manager.getTowers()) {
+                    if (tower->getX() == x && tower->getY() == y) {
+                        cout << "T ";
+                        hasTower = true;
+                        break;
+                    }
+                }
+            }
+
+            // Display map elements
+            if (!hasCritter && !hasTower) {
                 if (make_pair(x, y) == entry) {
                     cout << "E ";
                 } else if (make_pair(x, y) == exit) {
@@ -41,7 +54,7 @@ void displayMapWithCritters(const Map& map, const vector<Critter>& critters) {
         }
         cout << endl;
     }
-    cout << "\nLegend: C = Critter, E = Entry, X = Exit, # = Path, . = Scenery\n";
+    cout << "\nLegend: C = Critter, T = Tower, E = Entry, X = Exit, # = Path, . = Scenery\n";
 }
 
 int main() {
@@ -49,24 +62,21 @@ int main() {
     Map map(10, 10);
     map.generateRandomMap();
 
-    // Placing towers on the map
-    cout << "Placing Towers...\n";
-    BasicTower t1(2, 3);
-    AoETower t2(5, 5);
-    SlowTower t3(8, 6);
+    // Create TowerManager with 500 starting gold
+    TowerManager manager(&map, 500);
 
-    // Attack test
-    t1.attack();
-    t2.attack();
-    t3.attack();
+    // Place towers dynamically using TowerManager
+    manager.buyTower(2, 3, "Basic");
+    manager.buyTower(5, 5, "AoE");
+    manager.buyTower(8, 6, "Slow");
+
+    cout << "Initial map state with towers:" << endl;
+    displayMapWithCrittersAndTowers(map, {}, manager);
+
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 
     // Create critter group
     CritterGroup group(&map);
-
-    cout << "Initial map state:" << endl;
-    map.display();
-
-    std::this_thread::sleep_for(std::chrono::seconds(2));
 
     // Generate first wave
     int numCritters = group.generateWave();
@@ -78,10 +88,13 @@ int main() {
         group.spawnNextCritter();
 
         // Get current critters
-        const auto& critters = group.getActiveCritters();
+        auto& critters = group.getActiveCritters();
 
         // Display current state
-        displayMapWithCritters(map, critters);
+        displayMapWithCrittersAndTowers(map, critters, manager);
+
+        // Towers attack critters
+        manager.updateTowers(critters);
 
         // Move all critters
         group.moveAllCritters([](int damage) {
