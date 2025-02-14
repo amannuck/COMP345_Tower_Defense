@@ -35,7 +35,7 @@ AoETower::AoETower(int x, int y) : Tower(x, y, 200, 100, 2, 7, 1, 75) {}
 
 void AoETower::attack(vector<Critter>& critters) {
     for (Critter& critter : critters) {
-        if (critter.isDead()) continue;
+        if (critter.isDead()) continue; // 避免攻击已死亡的怪物
         if (abs(critter.getPosition().first - x) + abs(critter.getPosition().second - y) <= range) {
             critter.takeDamage(power);
             cout << "AoETower at (" << x << ", " << y << ") hit multiple critters!\n";
@@ -63,8 +63,8 @@ TowerManager::~TowerManager() {
 }
 
 bool TowerManager::buyTower(int x, int y, string type) {
-    if (!map->isPath(x, y)) {
-        cout << "Cannot place tower here!" << endl;
+    if (map->isPath(x, y)) {  // 不能在路径上放塔
+        cout << "Cannot place tower on path!" << endl;
         return false;
     }
 
@@ -95,6 +95,22 @@ bool TowerManager::sellTower(int x, int y) {
     return false;
 }
 
+bool TowerManager::upgradeTower(int x, int y) {
+    for (Tower* tower : towers) {
+        if (tower->getX() == x && tower->getY() == y) {
+            if (playerGold >= tower->getBuyCost()) { // 检查是否有足够金币升级
+                playerGold -= tower->getBuyCost(); 
+                tower->upgrade();
+                return true;
+            } else {
+                cout << "Not enough gold to upgrade the tower!" << endl;
+            }
+        }
+    }
+    return false;
+}
+
 void TowerManager::updateTowers(vector<Critter>& critters) {
     for (Tower* tower : towers) tower->attack(critters);
 }
+
