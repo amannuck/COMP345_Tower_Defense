@@ -8,25 +8,41 @@
 
 using namespace std;
 
-// Base Tower class
+/**
+ * @class Tower
+ * @brief Base class for all tower types.
+ *
+ * This class defines the fundamental properties of a tower, including:
+ * - Position (x, y)
+ * - Attack power
+ * - Attack range
+ * - Purchase & refund value
+ * - Upgrade mechanics
+ * 
+ * Different tower types (single-target, AoE, slow) inherit from this class.
+ */
 class Tower {
 protected:
-    int x, y;        // Tower position
-    int buyCost;     // Cost to purchase the tower
-    int refundValue; // Refund value when selling the tower
-    int range;       // Attack range
-    int power;       // Attack power
+    int x, y;        // Tower position on the map
+    int buyCost;     // Gold cost to purchase the tower
+    int refundValue; // Gold refunded when selling the tower
+    int range;       // Attack range (radius in grid units)
+    int power;       // Attack damage
     int fireRate;    // Attack speed (shots per second)
-    int level;       // Tower level (1, 2, 3)
-    int upgradeCost; // Cost to upgrade
+    int level;       // Tower level (1-3)
+    int upgradeCost; // Gold required to upgrade the tower
 
 public:
     Tower(int x, int y, int cost, int refund, int range, int power, int fireRate, int upgradeCost);
     virtual ~Tower() {}
 
-    virtual void attack(vector<Critter>& critters) = 0; // Attack method
+    // Attack method (to be implemented in subclasses)
+    virtual void attack(vector<Critter>& critters) = 0;
 
-    void upgrade();    // Upgrade tower level
+    // Upgrades the tower (increases damage and refund value)
+    void upgrade();
+
+    // Getter methods
     int getX() { return x; }
     int getY() { return y; }
     int getRange() { return range; }
@@ -36,33 +52,57 @@ public:
     int getLevel() { return level; }
 };
 
-// BasicTower: Single target attack
+/**
+ * @class BasicTower
+ * @brief A tower that deals single-target damage.
+ *
+ * This tower attacks one enemy at a time, making it ideal for high-health enemies.
+ */
 class BasicTower : public Tower {
 public:
     BasicTower(int x, int y);
     void attack(vector<Critter>& critters) override;
 };
 
-// AoETower: Area of Effect attack
+/**
+ * @class AoETower
+ * @brief A tower that deals area-of-effect (AoE) damage.
+ *
+ * This tower attacks multiple enemies within its range at once, but its damage is lower.
+ */
 class AoETower : public Tower {
 public:
     AoETower(int x, int y);
     void attack(vector<Critter>& critters) override;
 };
 
-// SlowTower: Slows enemies instead of dealing damage
+/**
+ * @class SlowTower
+ * @brief A tower that slows down enemies.
+ *
+ * This tower does not deal damage but slows enemies within its range, making them easier targets.
+ */
 class SlowTower : public Tower {
 public:
     SlowTower(int x, int y);
     void attack(vector<Critter>& critters) override;
 };
 
-// Tower Manager (handles buying, selling, and upgrading towers)
+/**
+ * @class TowerManager
+ * @brief Manages towers (purchasing, selling, upgrading).
+ *
+ * The TowerManager is responsible for:
+ * - Purchasing towers and placing them on the map
+ * - Upgrading existing towers
+ * - Selling towers and refunding gold
+ * - Managing tower attacks on critters
+ */
 class TowerManager {
 private:
-    vector<Tower*> towers;
-    int playerGold;
-    Map* map;
+    vector<Tower*> towers; // List of all towers
+    int playerGold;        // Player's available gold
+    Map* map;              // Pointer to the game map
 
 public:
     TowerManager(Map* gameMap, int initialGold);
@@ -76,4 +116,3 @@ public:
 };
 
 #endif // TOWER_H
-
