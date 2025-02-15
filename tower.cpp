@@ -52,54 +52,9 @@ void SlowTower::attack(vector<Critter>& critters) {
     for (Critter& critter : critters) {
         if (critter.isDead()) continue;
         if (abs(critter.getPosition().first - x) + abs(critter.getPosition().second - y) <= range) {
-            cout << "SlowTower at (" << x << ", " << y << ") slowed a critter!\n";
+            // Simulating slowing effect (Reduce critter speed)
+            int newSpeed = max(critter.getSpeed() - 1, 1);
+            cout << "SlowTower at (" << x << ", " << y << ") slowed a critter! New speed: " << newSpeed << "\n";
         }
     }
-}
-
-// **TowerManager Implementation**
-TowerManager::TowerManager(Map* gameMap, int initialGold) : map(gameMap), playerGold(initialGold) {}
-
-TowerManager::~TowerManager() {
-    for (Tower* tower : towers) delete tower;
-}
-
-// **Purchase Tower**
-bool TowerManager::buyTower(int x, int y, string type) {
-    if (map->isPath(x, y)) {  
-        cout << "Cannot place tower on path!" << endl;
-        return false;
-    }
-
-    Tower* newTower = nullptr;
-    if (type == "Basic") newTower = new BasicTower(x, y);
-    else if (type == "AoE") newTower = new AoETower(x, y);
-    else if (type == "Slow") newTower = new SlowTower(x, y);
-
-    if (newTower && playerGold >= newTower->getBuyCost()) {
-        towers.push_back(newTower);
-        playerGold -= newTower->getBuyCost();
-        return true;
-    }
-
-    delete newTower;
-    return false;
-}
-
-// **Sell Tower**
-bool TowerManager::sellTower(int x, int y) {
-    for (size_t i = 0; i < towers.size(); ++i) {
-        if (towers[i]->getX() == x && towers[i]->getY() == y) {
-            playerGold += towers[i]->getRefundValue();
-            delete towers[i];
-            towers.erase(towers.begin() + i);
-            return true;
-        }
-    }
-    return false;
-}
-
-// **Update Towers (Attack Critters)**
-void TowerManager::updateTowers(vector<Critter>& critters) {
-    for (Tower* tower : towers) tower->attack(critters);
 }
