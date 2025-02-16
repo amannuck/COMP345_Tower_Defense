@@ -72,11 +72,12 @@ int main() {
     Map map(10, 10);
     map.generateRandomMap();
 
-    // Create towers manually (since TowerManager is not used)
+    // Create towers and register them on the map
     vector<Tower*> towers;
-    towers.push_back(new BasicTower(2, 3));
-    towers.push_back(new AoETower(5, 5));
-    towers.push_back(new SlowTower(8, 6));
+
+    if (map.placeTower(2, 3)) towers.push_back(new BasicTower(2, 3));
+    if (map.placeTower(5, 5)) towers.push_back(new AoETower(5, 5));
+    if (map.placeTower(8, 6)) towers.push_back(new SlowTower(8, 6));
 
     // Display initial map state with towers
     cout << "Initial map state with towers:" << endl;
