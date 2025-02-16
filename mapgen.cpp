@@ -6,15 +6,11 @@
 Map::Map(int w, int h) {
     width = w;
     height = h;
-    // No entry and exit point set initially
     entrySet = false;
     exitSet = false;
 
-    // Create a 2D grid filled with scenery
-    grid.resize(height);
-    for (int y = 0; y < height; y++) {
-        grid[y].resize(width, SCENERY);  // All cells start as SCENERY
-    }
+    // Create a 2D grid filled with SCENERY
+    grid.resize(height, vector<CellType>(width, SCENERY));
 }
 
 // Sets a cell as PATH if coordinates are valid
@@ -44,6 +40,26 @@ void Map::setExit(int x, int y) {
     }
 }
 
+// Places a tower on the map if valid
+bool Map::placeTower(int x, int y) {
+    if (!isValidCoordinate(x, y)) {
+        cout << "Invalid coordinates!" << endl;
+        return false;
+    }
+    if (grid[y][x] == PATH) {
+        cout << "Cannot place tower on a path!" << endl;
+        return false;
+    }
+    if (grid[y][x] == TOWER) {
+        cout << "A tower is already placed here!" << endl;
+        return false;
+    }
+
+    grid[y][x] = TOWER;
+    cout << "Tower placed at (" << x << ", " << y << ")" << endl;
+    return true;
+}
+
 // Returns the entry point coordinates
 pair<int, int> Map::getEntry() const {
     return entryPoint;
@@ -63,6 +79,8 @@ void Map::display() {
                 cout << "E ";          // Entry point
             else if (exitSet && exitPoint == make_pair(x, y))
                 cout << "X ";          // Exit point
+            else if (grid[y][x] == TOWER)
+                cout << "T ";          // Tower cell (NEW)
             else if (grid[y][x] == PATH)
                 cout << "# ";          // Path cell
             else
@@ -88,14 +106,7 @@ bool Map::isValidCoordinate(int x, int y) const {
 
 // Checks if there's a path from entry to exit
 bool Map::isPathConnected() {
-    // Create a 2D array to keep track of visited cells
-    vector<vector<bool>> visited;
-    visited.resize(height);
-    for (int i = 0; i < height; i++) {
-        visited[i].resize(width, false);
-    }
-
-    // Create a queue
+    vector<vector<bool>> visited(height, vector<bool>(width, false));
     queue<pair<int, int>> toCheck;
 
     // Start from entry point
@@ -103,59 +114,33 @@ bool Map::isPathConnected() {
     visited[entryPoint.second][entryPoint.first] = true;
 
     while (!toCheck.empty()) {
-        // Get the current position
         int currentX = toCheck.front().first;
         int currentY = toCheck.front().second;
         toCheck.pop();
 
-        // Check if we reached the exit
         if (currentX == exitPoint.first && currentY == exitPoint.second) {
             return true;  // Path found!
         }
 
-        // Check cell above
-        if (isValidCoordinate(currentX, currentY - 1) &&
-            !visited[currentY - 1][currentX] &&
-            grid[currentY - 1][currentX] == PATH)
-        {
-            toCheck.push({currentX, currentY - 1});
-            visited[currentY - 1][currentX] = true;
-        }
+        // Check adjacent cells (up, down, left, right)
+        int dx[] = {0, 0, -1, 1};
+        int dy[] = {-1, 1, 0, 0};
+        for (int i = 0; i < 4; i++) {
+            int newX = currentX + dx[i];
+            int newY = currentY + dy[i];
 
-        // Check cell below
-        if (isValidCoordinate(currentX, currentY + 1) &&
-            !visited[currentY + 1][currentX] &&
-            grid[currentY + 1][currentX] == PATH)
-        {
-            toCheck.push({currentX, currentY + 1});
-            visited[currentY + 1][currentX] = true;
-        }
-
-        // Check cell to the left
-        if (isValidCoordinate(currentX - 1, currentY) &&
-            !visited[currentY][currentX - 1] &&
-            grid[currentY][currentX - 1] == PATH)
-        {
-            toCheck.push({currentX - 1, currentY});
-            visited[currentY][currentX - 1] = true;
-        }
-
-        // Check cell to the right
-        if (isValidCoordinate(currentX + 1, currentY) &&
-            !visited[currentY][currentX + 1] &&
-            grid[currentY][currentX + 1] == PATH)
-        {
-            toCheck.push({currentX + 1, currentY});
-            visited[currentY][currentX + 1] = true;
+            if (isValidCoordinate(newX, newY) && !visited[newY][newX] && grid[newY][newX] == PATH) {
+                toCheck.push({newX, newY});
+                visited[newY][newX] = true;
+            }
         }
     }
-
     return false;  // No path found to exit
 }
 
 // Generates a random valid map
 void Map::generateRandomMap() {
-    srand(time(0));  // Initialize random number generator with current time
+    srand(time(0));  // Initialize random number generator
 
     // Set entry and exit points on opposite sides
     int entryX = 0, entryY = rand() % height;
@@ -178,22 +163,16 @@ void Map::generateRandomMap() {
 
     while (x != exitX || y != exitY) {
         int direction = rand() % 2;  // Randomly choose horizontal or vertical movement
-
-        // Move towards exit
         if (direction == 0 && x != exitX) {
             x += (exitX > x) ? 1 : -1;  // Move right if exit is to the right, else left
         } else if (y != exitY) {
             y += (exitY > y) ? 1 : -1;  // Move down if exit is below, else up
         }
-
         grid[y][x] = PATH;  // Mark the cell as path
     }
 }
 
 // Checks if a cell is a PATH cell
 bool Map::isPath(int x, int y) const {
-    if (!isValidCoordinate(x, y)) {
-        return false;
-    }
-    return grid[y][x] == PATH;
+    return isValidCoordinate(x, y) && grid[y][x] == PATH;
 }
