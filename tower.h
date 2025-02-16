@@ -35,7 +35,7 @@ public:
     Tower(int x, int y, int cost, int refund, int range, int power, int fireRate, int upgradeCost);
     virtual ~Tower() {}
 
-    virtual void attack(vector<Critter>& critters) = 0; // Attack logic
+    virtual void attack(vector<Critter>& critters) = 0; // Attack logic (modifiable)
 
     void upgrade();    // Upgrades the tower (increases damage and refund value)
 
