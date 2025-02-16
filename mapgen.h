@@ -11,11 +11,12 @@ using namespace std;
  * @enum CellType
  * @brief Defines the possible cell types in the game map.
  *
- * The map consists of two types of cells:
+ * The map consists of three types of cells:
  * - SCENERY: Areas where towers can be placed, typically representing buildable terrain
  * - PATH: The route that critters (enemies) follow from entry to exit point
+ * - TOWER: A location where a tower is placed
  */
-enum CellType { SCENERY, PATH };
+enum CellType { SCENERY, PATH, TOWER };
 
 /**
  * @class Map
@@ -27,12 +28,7 @@ enum CellType { SCENERY, PATH };
  * - Managing entry and exit points
  * - Ensuring map validity (connected path, proper entry/exit)
  * - Generating random valid maps
- *
- * The map uses a grid system where each cell is either SCENERY (for tower placement)
- * or PATH (for critter movement). A valid map must have:
- * - A continuous PATH from entry to exit point
- * - Exactly one entry and one exit point
- * - Sufficient SCENERY cells for tower placement
+ * - Allowing towers to be placed on SCENERY cells
  */
 class Map {
 private:
@@ -91,6 +87,14 @@ public:
     void setExit(int x, int y);
 
     /**
+     * @brief Places a tower at the given location if it's valid
+     * @param x X-coordinate
+     * @param y Y-coordinate
+     * @return true if the tower was placed successfully, false otherwise
+     */
+    bool placeTower(int x, int y);
+
+    /**
      * @brief Gets the current entry point coordinates
      * @return pair<int, int> containing (x,y) coordinates
      */
@@ -104,7 +108,7 @@ public:
 
     /**
      * @brief Displays the current map state to the console
-     * Useful for debugging and development
+     * Towers are marked as 'T' on the map
      */
     void display();
 
