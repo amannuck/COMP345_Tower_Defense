@@ -25,7 +25,7 @@ void BasicTower::attack(vector<Critter>& critters) {
     for (Critter& critter : critters) {
         if (critter.isDead()) continue;
         if (abs(critter.getPosition().first - x) + abs(critter.getPosition().second - y) <= range) {
-            critter.takeDamage(power);
+            critter.takeDamage(power);  // Deal damage
             cout << "BasicTower at (" << x << ", " << y << ") hit a critter for " << power << " damage!\n";
             return;  // Only attacks one target
         }
@@ -39,8 +39,8 @@ void AoETower::attack(vector<Critter>& critters) {
     for (Critter& critter : critters) {
         if (critter.isDead()) continue; // Skip dead enemies
         if (abs(critter.getPosition().first - x) + abs(critter.getPosition().second - y) <= range) {
-            critter.takeDamage(power);
-            cout << "AoETower at (" << x << ", " << y << ") hit multiple critters!\n";
+            critter.takeDamage(power);  // Apply area damage
+            cout << "AoETower at (" << x << ", " << y << ") hit multiple critters for " << power << " damage!\n";
         }
     }
 }
@@ -54,6 +54,7 @@ void SlowTower::attack(vector<Critter>& critters) {
         if (abs(critter.getPosition().first - x) + abs(critter.getPosition().second - y) <= range) {
             // Simulating slowing effect (Reduce critter speed)
             int newSpeed = max(critter.getSpeed() - 1, 1);
+            critter.setSpeed(newSpeed); // Apply the slow effect
             cout << "SlowTower at (" << x << ", " << y << ") slowed a critter! New speed: " << newSpeed << "\n";
         }
     }
