@@ -1,8 +1,17 @@
+/**
+ * @file mapgen.cpp
+ * @brief Implementation of the Map class for the Tower Defense game.
+ */
+
 #include "mapgen.h"
 #include <cstdlib>  // rand()
 #include <ctime>    // time()
 
-// Constructor: Initialize map with given dimensions
+/**
+ * @brief Constructs a new Map object with given dimensions.
+ * @param w Width of the map.
+ * @param h Height of the map.
+ */
 Map::Map(int w, int h) {
     width = w;
     height = h;
@@ -13,15 +22,23 @@ Map::Map(int w, int h) {
     grid.resize(height, vector<CellType>(width, SCENERY));
 }
 
-// Sets a cell as PATH if coordinates are valid
-void Map::setPath(int x, int y) {
+/**
+ * @brief Sets a cell as PATH if coordinates are valid.
+ * @param x X-coordinate.
+ * @param y Y-coordinate.
+ */
+ void Map::setPath(int x, int y) {
     if (isValidCoordinate(x, y)) {
         grid[y][x] = PATH;
     }
 }
 
-// Sets the entry point if it's a valid PATH cell
-void Map::setEntry(int x, int y) {
+/**
+ * @brief Sets the entry point if it's a valid PATH cell.
+ * @param x X-coordinate.
+ * @param y Y-coordinate.
+ */
+ void Map::setEntry(int x, int y) {
     if (isValidCoordinate(x, y) && grid[y][x] == PATH) {
         entryPoint = {x, y};
         entrySet = true;
@@ -30,8 +47,12 @@ void Map::setEntry(int x, int y) {
     }
 }
 
-// Sets the exit point if it's a valid PATH cell
-void Map::setExit(int x, int y) {
+/**
+ * @brief Sets the exit point if it's a valid PATH cell.
+ * @param x X-coordinate.
+ * @param y Y-coordinate.
+ */
+ void Map::setExit(int x, int y) {
     if (isValidCoordinate(x, y) && grid[y][x] == PATH) {
         exitPoint = {x, y};
         exitSet = true;
@@ -40,8 +61,13 @@ void Map::setExit(int x, int y) {
     }
 }
 
-// Places a tower on the map if valid
-bool Map::placeTower(int x, int y) {
+/**
+ * @brief Places a tower on the map if valid.
+ * @param x X-coordinate.
+ * @param y Y-coordinate.
+ * @return True if the tower was placed successfully, false otherwise.
+ */
+ bool Map::placeTower(int x, int y) {
     if (!isValidCoordinate(x, y)) {
         cout << "Invalid coordinates!" << endl;
         return false;
@@ -60,18 +86,26 @@ bool Map::placeTower(int x, int y) {
     return true;
 }
 
-// Returns the entry point coordinates
-pair<int, int> Map::getEntry() const {
+/**
+ * @brief Returns the entry point coordinates.
+ * @return Pair<int, int> containing (x,y) coordinates.
+ */
+ pair<int, int> Map::getEntry() const {
     return entryPoint;
 }
 
-// Returns the exit point coordinates
-pair<int, int> Map::getExit() const {
+/**
+ * @brief Returns the exit point coordinates.
+ * @return Pair<int, int> containing (x,y) coordinates.
+ */
+ pair<int, int> Map::getExit() const {
     return exitPoint;
 }
 
-// Displays the map
-void Map::display() {
+/**
+ * @brief Displays the map layout.
+ */
+ void Map::display() {
     cout << "Map Layout:\n";
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
@@ -90,8 +124,11 @@ void Map::display() {
     }
 }
 
-// Validates the map configuration
-bool Map::validateMap() {
+/**
+ * @brief Validates the map configuration.
+ * @return True if map is valid, false otherwise.
+ */
+ bool Map::validateMap() {
     if (!entrySet || !exitSet) {
         cout << "Error: Entry and exit points must be set!" << endl;
         return false;
@@ -99,12 +136,25 @@ bool Map::validateMap() {
     return isPathConnected();  // Check if there's a valid path
 }
 
-// Checks if coordinates are within map boundaries
+/**
+ * @brief Checks if coordinates are within map boundaries.
+ * @param x X-coordinate.
+ * @param y Y-coordinate.
+ * @return True if coordinates are valid, false otherwise.
+ */
 bool Map::isValidCoordinate(int x, int y) const {
     return x >= 0 && x < width && y >= 0 && y < height;
 }
 
-// Checks if there's a path from entry to exit
+
+/**
+ * @brief Checks if there is a valid path from the entry point to the exit point.
+ *
+ * This function uses a breadth-first search (BFS) algorithm to verify whether
+ * a connected path exists from the entry point to the exit point.
+ *
+ * @return True if a valid path exists, false otherwise.
+ */
 bool Map::isPathConnected() {
     vector<vector<bool>> visited(height, vector<bool>(width, false));
     queue<pair<int, int>> toCheck;
@@ -138,8 +188,10 @@ bool Map::isPathConnected() {
     return false;  // No path found to exit
 }
 
-// Generates a random valid map
-void Map::generateRandomMap() {
+/**
+ * @brief Generates a random valid map layout.
+ */
+ void Map::generateRandomMap() {
     srand(time(0));  // Initialize random number generator
 
     // Set entry and exit points on opposite sides
@@ -172,7 +224,12 @@ void Map::generateRandomMap() {
     }
 }
 
-// Checks if a cell is a PATH cell
+/**
+ * @brief Checks if a given cell is part of the PATH.
+ * @param x X-coordinate.
+ * @param y Y-coordinate.
+ * @return True if cell is PATH, false if SCENERY.
+ */
 bool Map::isPath(int x, int y) const {
     return isValidCoordinate(x, y) && grid[y][x] == PATH;
 }

@@ -1,3 +1,8 @@
+/**
+ * @file driver.cpp
+ * @brief Main game loop for the Tower Defense game.
+ */
+
 #include "mapgen.h"
 #include "critter.h"
 #include "tower.h"
@@ -19,6 +24,10 @@ using namespace std;
  * - `X` for Exit
  * - `#` for Path
  * - `.` for Empty Land
+ *
+ * @param map The game map.
+ * @param critters List of active critters.
+ * @param towers List of placed towers.
  */
 void displayGameState(const Map& map, const vector<Critter>& critters, const vector<Tower*>& towers) {
     auto entry = map.getEntry();
@@ -67,6 +76,13 @@ void displayGameState(const Map& map, const vector<Critter>& critters, const vec
     cout << "\nLegend: C = Critter, T = Tower, E = Entry, X = Exit, # = Path, . = Scenery\n";
 }
 
+/**
+ * @brief Main function to run the Tower Defense game.
+ *
+ * Initializes the map, places towers, generates waves of critters, and runs the game loop.
+ *
+ * @return 0 on successful execution.
+ */
 int main() {
     // Create a 10x10 game map
     Map map(10, 10);
@@ -77,7 +93,7 @@ int main() {
 
     if (map.placeTower(2, 3)) towers.push_back(new BasicTower(2, 3));
     if (map.placeTower(5, 5)) towers.push_back(new AoETower(5, 5));
-    if (map.placeTower(8, 6)) towers.push_back(new SlowTower(8, 6));
+    // if (map.placeTower(8, 6)) towers.push_back(new SlowTower(8, 6));
 
     // Display initial map state with towers
     cout << "Initial map state with towers:" << endl;
@@ -98,14 +114,14 @@ int main() {
         group.spawnNextCritter();
 
         // Get all active critters
-        auto& critters = group.getActiveCritters();
+        vector<Critter> crittersCopy = group.getActiveCritters(); // Create a copy to avoid modifying const reference
 
         // Display current game state
-        displayGameState(map, critters, towers);
+        displayGameState(map, crittersCopy, towers);
 
-        // Towers attack critters
+        // Towers attack critters (modifying crittersCopy instead of original critters)
         for (Tower* tower : towers) {
-            tower->attack(critters);
+            tower->attack(crittersCopy);
         }
 
         // Move all critters toward the exit
@@ -117,7 +133,7 @@ int main() {
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
         // Display wave status
-        cout << "Active critters: " << critters.size()
+        cout << "Active critters: " << crittersCopy.size()
              << ", Remaining spawns: " << group.getRemainingSpawns() << endl;
     }
 

@@ -1,77 +1,106 @@
- #ifndef CRITTER_GROUP_H
- #define CRITTER_GROUP_H
+/**
+ * @file CritterGroup.h
+ * @brief Declaration of the CritterGroup class for managing critter waves in the Tower Defense game.
+ */
 
- using namespace std;
- #include <vector>
- #include <queue>
- #include <cmath>
+#ifndef CRITTER_GROUP_H
+#define CRITTER_GROUP_H
+
+#include <vector>
+#include <iostream>
+#include <utility>
+#include <queue>
+#include <cmath>
 #include <functional>
- #include "critter.h"
- #include "mapgen.h"
+#include "critter.h"
+#include "mapgen.h"
 
- /**
-  * @class CritterGroup
-  * @brief Manages groups of critters and wave generation in the tower defense game
-  */
- class CritterGroup {
-     private:
-         int waveNum;                  ///< Current wave number
-         const Map* map;                  ///< Pointer to the map object
-         vector<Critter> activeCritters;  ///< List of active critters
-         queue<Critter> spawnQueue;       ///< Queue of critters to spawn
+using namespace std;
 
-         /**
-          * @brief Calculate critter stats based on wave number
-          * @param waveNum Current wave number
-          * @return tuple of (hp, strength, speed, reward)
-          */
-         tuple<int, int, int ,int> calculateCritterStats(int waveNum);
+/**
+ * @class CritterGroup
+ * @brief Manages groups of critters and wave generation in the tower defense game.
+ *
+ * This class is responsible for generating waves of critters, moving them along the map,
+ * handling attacks from towers, and managing their lifecycle.
+ */
+class CritterGroup {
+private:
+    int waveNum;                  ///< Current wave number
+    const Map* map;                ///< Pointer to the game map for pathfinding
+    vector<Critter> activeCritters; ///< List of active critters on the map
+    queue<Critter> spawnQueue;      ///< Queue of critters waiting to spawn
 
-     public:
-         /**
-          * @brief Constructor for Critter Group
-          * @param map Pointer to the game map
-          */
-         explicit CritterGroup(const Map* map);
+    /**
+     * @brief Calculates critter stats based on the wave number.
+     * @param waveNum The current wave number.
+     * @return Tuple containing (hp, strength, speed, reward) values.
+     */
+    tuple<int, int, int, int> calculateCritterStats(int waveNum);
 
-         /**
-          * @brief Generate a new wave of critters
-          * @return Number of critters in the wave
-          */
-         int generateWave();
+public:
+    /**
+     * @brief Constructs a CritterGroup object.
+     * @param map Pointer to the game map.
+     */
+    explicit CritterGroup(const Map* map);
 
-         /**
-          * @brief Move all active critters
-          * @param onCritterExit Callback function when critter reaches exit
-          */
-         void moveAllCritters(function<void(int)> onCritterExit);
+    /**
+     * @brief Generates a new wave of critters.
+     * @return Number of critters in the wave.
+     */
+    int generateWave();
 
-         /**
-          * @brief Spawn next critter from queue if available
-          * @return True if critter was spawned, false if queue empty
-          */
-         bool spawnNextCritter();
+    /**
+     * @brief Moves all active critters along their path.
+     * @param onCritterExit Callback function triggered when a critter reaches the exit.
+     */
+    void moveAllCritters(function<void(int)> onCritterExit);
 
-         /**
-          * @brief Damage a specific critter in the group
-          * @param critterIndex Index of the critter in activecritters
-          * @param damage Amount of damage dealt
-          * @param onCritterDeath Callback function when critter dies
-          * @return True if critter died, false otherwise
-          */
-         bool processCritterHit(size_t critterIndex, int damage, function<void(int)> onCritterDeath);
+    /**
+     * @brief Spawns the next critter from the queue if available.
+     * @return True if a critter was spawned, false if the queue is empty.
+     */
+    bool spawnNextCritter();
 
-         /**
-          * @brief Remove dead critters from active list
-          * @param onCritterDeath Callback for each removed critter
-          */
-         void removeDeadCritters(function<void(int)> onCritterDeath);
+    /**
+     * @brief Processes damage to a specific critter in the group.
+     * @param critterIndex Index of the critter in activeCritters.
+     * @param damage Amount of damage to be applied.
+     * @param onCritterDeath Callback function triggered when a critter dies.
+     * @return True if the critter died, false otherwise.
+     */
+    bool processCritterHit(size_t critterIndex, int damage, function<void(int)> onCritterDeath);
 
-         // Getters
-         int getCurrentWave() const { return waveNum; }
-         const vector<Critter>& getActiveCritters() const { return activeCritters; }
-         size_t getRemainingSpawns() const { return spawnQueue.size(); }
-         bool isWaveComplete() const { return spawnQueue.empty() && activeCritters.empty(); }
- };
+    /**
+     * @brief Removes dead critters from the active list.
+     * @param onCritterDeath Callback function triggered for each removed critter.
+     */
+    void removeDeadCritters(function<void(int)> onCritterDeath);
 
- #endif // CRITTER_GROUP_H
+    /**
+     * @brief Gets the current wave number.
+     * @return The current wave number.
+     */
+    int getCurrentWave() const { return waveNum; }
+
+    /**
+     * @brief Gets the list of active critters.
+     * @return A reference to the vector of active critters.
+     */
+    vector<Critter>& getActiveCritters();
+
+    /**
+     * @brief Gets the number of critters remaining to spawn.
+     * @return Number of critters left in the spawn queue.
+     */
+    size_t getRemainingSpawns() const { return spawnQueue.size(); }
+
+    /**
+     * @brief Checks if the wave is complete (no active or remaining critters).
+     * @return True if the wave is complete, false otherwise.
+     */
+    bool isWaveComplete() const { return spawnQueue.empty() && activeCritters.empty(); }
+};
+
+#endif // CRITTER_GROUP_H

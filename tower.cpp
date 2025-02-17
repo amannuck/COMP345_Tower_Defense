@@ -1,12 +1,30 @@
+/**
+ * @file tower.cpp
+ * @brief Implementation of the Tower class for the Tower Defense game.
+ */
+
 #include "tower.h"
 
-// **Base Tower Constructor**
-// Initializes the tower with position, attack power, cost, and range.
+/**
+ * @brief Constructs a Tower object with specified properties.
+ *
+ * @param x X-coordinate of the tower.
+ * @param y Y-coordinate of the tower.
+ * @param cost Initial cost of the tower.
+ * @param refund Refund value when selling the tower.
+ * @param range Attack range of the tower.
+ * @param power Attack power of the tower.
+ * @param fireRate Rate of fire of the tower.
+ * @param upgradeCost Cost to upgrade the tower.
+ */
 Tower::Tower(int x, int y, int cost, int refund, int range, int power, int fireRate, int upgradeCost)
-    : x(x), y(y), buyCost(cost), refundValue(refund), range(range), power(power), fireRate(fireRate), upgradeCost(upgradeCost), level(1) {}
+        : x(x), y(y), buyCost(cost), refundValue(refund), range(range), power(power), fireRate(fireRate), upgradeCost(upgradeCost), level(1) {}
 
-// **Upgrade Tower**
-// Increases attack power and refund value. Max level is 3.
+/**
+ * @brief Upgrades the tower by increasing attack power and refund value.
+ *
+ * The tower can be upgraded up to a maximum level of 3.
+ */
 void Tower::upgrade() {
     if (level < 3) {
         level++;
@@ -18,9 +36,19 @@ void Tower::upgrade() {
     }
 }
 
-// **BasicTower: Single-target attack**
+/**
+ * @brief Constructs a BasicTower with predefined attributes.
+ *
+ * @param x X-coordinate of the tower.
+ * @param y Y-coordinate of the tower.
+ */
 BasicTower::BasicTower(int x, int y) : Tower(x, y, 100, 50, 3, 10, 1, 50) {}
 
+/**
+ * @brief Attacks the first critter within range.
+ *
+ * @param critters List of active critters on the map.
+ */
 void BasicTower::attack(vector<Critter>& critters) {
     for (Critter& critter : critters) {
         if (critter.isDead()) continue;
@@ -32,30 +60,25 @@ void BasicTower::attack(vector<Critter>& critters) {
     }
 }
 
-// **AoETower: Area attack**
+/**
+ * @brief Constructs an AoETower with predefined attributes.
+ *
+ * @param x X-coordinate of the tower.
+ * @param y Y-coordinate of the tower.
+ */
 AoETower::AoETower(int x, int y) : Tower(x, y, 200, 100, 2, 7, 1, 75) {}
 
+/**
+ * @brief Attacks multiple critters within range.
+ *
+ * @param critters List of active critters on the map.
+ */
 void AoETower::attack(vector<Critter>& critters) {
     for (Critter& critter : critters) {
         if (critter.isDead()) continue; // Skip dead enemies
         if (abs(critter.getPosition().first - x) + abs(critter.getPosition().second - y) <= range) {
             critter.takeDamage(power);  // Apply area damage
             cout << "AoETower at (" << x << ", " << y << ") hit multiple critters for " << power << " damage!\n";
-        }
-    }
-}
-
-// **SlowTower: Slowing effect**
-SlowTower::SlowTower(int x, int y) : Tower(x, y, 150, 75, 4, 5, 1, 60) {}
-
-void SlowTower::attack(vector<Critter>& critters) {
-    for (Critter& critter : critters) {
-        if (critter.isDead()) continue;
-        if (abs(critter.getPosition().first - x) + abs(critter.getPosition().second - y) <= range) {
-            // Simulating slowing effect (Reduce critter speed)
-            int newSpeed = max(critter.getSpeed() - 1, 1);
-            critter.setSpeed(newSpeed); // Apply the slow effect
-            cout << "SlowTower at (" << x << ", " << y << ") slowed a critter! New speed: " << newSpeed << "\n";
         }
     }
 }
