@@ -31,6 +31,10 @@ add_executable(${PROJECT_NAME} main.cpp
         MapEditor.cpp
         Game.h
         Game.cpp
+        Tower.cpp
+        Tower.h
+        TowerManager.cpp
+        TowerManager.h
 )
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)

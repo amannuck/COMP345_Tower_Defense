@@ -25,6 +25,18 @@
 },
 {
   "directory": "C:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug",
+  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\Tower.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\Tower.cpp",
+  "file": "C:\\Users\\amann\\CLionProjects\\defenseGUI\\Tower.cpp",
+  "output": "CMakeFiles\\defenseGUI.dir\\Tower.cpp.obj"
+},
+{
+  "directory": "C:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug",
+  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\TowerManager.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\TowerManager.cpp",
+  "file": "C:\\Users\\amann\\CLionProjects\\defenseGUI\\TowerManager.cpp",
+  "output": "CMakeFiles\\defenseGUI.dir\\TowerManager.cpp.obj"
+},
+{
+  "directory": "C:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug",
   "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\gcc.exe -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -D_CRT_SECURE_NO_WARNINGS -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -isystem C:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -fno-strict-aliasing -Werror=implicit-function-declaration -Werror=pointer-arith  -g -std=gnu99 -fdiagnostics-color=always -o _deps\\raylib-build\\raylib\\CMakeFiles\\raylib.dir\\raudio.c.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\cmake-build-debug\\_deps\\raylib-src\\src\\raudio.c",
   "file": "C:\\Users\\amann\\CLionProjects\\defenseGUI\\cmake-build-debug\\_deps\\raylib-src\\src\\raudio.c",
   "output": "_deps\\raylib-build\\raylib\\CMakeFiles\\raylib.dir\\raudio.c.obj"
