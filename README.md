@@ -12,5 +12,5 @@ Raylib is a simple and easy-to-use C library for game development. This guide pr
 4. Include "raylib.h" in your implementation.
 
 ### Useful links
-[https://youtu.be/maR-qQqC0nM?si=URJMjyvOzh4_WDDw](https://youtu.be/maR-qQqC0nM?si=URJMjyvOzh4_WDDw)
-[https://youtu.be/PaAcVk5jUd8?si=z6xFGHu8isYZOVBM](https://youtu.be/PaAcVk5jUd8?si=z6xFGHu8isYZOVBM)
+- [https://youtu.be/maR-qQqC0nM?si=URJMjyvOzh4_WDDw](https://youtu.be/maR-qQqC0nM?si=URJMjyvOzh4_WDDw)
+- [https://youtu.be/PaAcVk5jUd8?si=z6xFGHu8isYZOVBM](https://youtu.be/PaAcVk5jUd8?si=z6xFGHu8isYZOVBM)
