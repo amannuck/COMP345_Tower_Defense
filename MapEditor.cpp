@@ -8,6 +8,7 @@ MapEditor::MapEditor(int width, int height) {
 
 MapEditor::~MapEditor() {
     delete currentMap;
+    currentMap = nullptr;
 }
 
 void MapEditor::update() {

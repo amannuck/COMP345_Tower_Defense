@@ -14,7 +14,9 @@ Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSiz
 }
 
 Game::~Game() {
-    if (currentMap) delete currentMap;
+    delete currentMap;
+    currentMap = nullptr;
+    towerManager = nullptr;
 }
 
 void Game::drawTowerMenu() const {
