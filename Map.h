@@ -6,6 +6,8 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "IObserver.h"
+
 enum class CellType {
     PATH,
     SCENERY,
@@ -14,7 +16,7 @@ enum class CellType {
     TOWER
 };
 
-class Map {
+class Map : public IObservable {
 private:
     int width;
     int height;

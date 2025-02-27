@@ -1,7 +1,7 @@
 "C:\Users\amann\AppData\Local\JetBrains\CLion 2024.3.1.1\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=C:/Users/amann/AppData/Local/JetBrains/CLion 2024.3.1.1/bin/ninja/win/x64/ninja.exe" -G Ninja -S C:\Users\amann\CLionProjects\defenseGUI -B C:\Users\amann\CLionProjects\defenseGUI\cmake-build-debug
 -- Populating raylib
--- Configuring done (0.0s)
--- Generating done (0.0s)
+-- Configuring done (0.1s)
+-- Generating done (0.1s)
 -- Build files have been written to: C:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-subbuild
 ninja: no work to do.
 -- Testing if -Werror=pointer-arith can be used -- compiles
@@ -15,6 +15,6 @@ ninja: no work to do.
 -- Compiling with the flags:
 --   PLATFORM=PLATFORM_DESKTOP
 --   GRAPHICS=GRAPHICS_API_OPENGL_33
--- Configuring done (0.5s)
+-- Configuring done (0.8s)
 -- Generating done (0.1s)
 -- Build files have been written to: C:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug

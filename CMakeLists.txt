@@ -35,6 +35,9 @@ add_executable(${PROJECT_NAME} main.cpp
         Tower.h
         TowerManager.cpp
         TowerManager.h
+        IObserver.h
+        MapObserver.cpp
+        MapObserver.h
 )
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)

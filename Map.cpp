@@ -66,6 +66,8 @@ void Map::generateRandomMap() {
     // Reset entry and exit points with correct cell types
     grid[entryY][0] = CellType::ENTRY;
     grid[exitY][width - 1] = CellType::EXIT;
+
+    notifyObservers();
 }
 
 bool Map::hasValidPath() const {
@@ -111,6 +113,8 @@ bool Map::placeTower(int x, int y) {
     if (grid[y][x] != CellType::SCENERY) return false;
 
     grid[y][x] = CellType::TOWER;
+
+    notifyObservers();
     return true;
 }
 
@@ -159,6 +163,8 @@ void Map::setCellType(int x, int y, CellType type) {
         else if (type == CellType::EXIT) {
             exitPoint = {static_cast<float>(x), static_cast<float>(y)};
         }
+
+        notifyObservers();
     }
 }
 
