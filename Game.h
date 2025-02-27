@@ -22,9 +22,20 @@ private:
     void initializeMap();
     std::string selectedTowerType;
     float towerMenuHeight = 100;
+    float sideMenuWidth = 200;  // Width of the side menu for tower info
+
+    Tower* selectedTower = nullptr;  // Currently selected tower
 
     void drawTowerMenu() const;
     void handleTowerMenuClick(Vector2 mousePos);
+
+    // New methods for permanent side menu
+    void drawSideMenu() const;
+    void drawSideMenuDefault() const;
+    void drawTowerInfoInSideMenu() const;
+
+    void handleTowerSelection(Vector2 mousePos);
+    void handleTowerInfoMenuClick(Vector2 mousePos);
     void updateTowers();
     void drawTowerShots() const;
 

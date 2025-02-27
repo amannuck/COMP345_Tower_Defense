@@ -2,7 +2,6 @@
 #include "Game.h"
 #include <memory>
 
-
 Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSize(0) {
     mapSizes = {
         {12, 12},
@@ -10,11 +9,10 @@ Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSiz
         {16, 16},
     };
     towerManager = std::make_unique<TowerManager>(1000);
-
 }
 
 Game::~Game() {
-    delete currentMap;
+    delete currentMap, towerManager;
     currentMap = nullptr;
     towerManager = nullptr;
 }
@@ -24,7 +22,7 @@ void Game::drawTowerMenu() const {
     std::string bankText = "Bank: $" + std::to_string(towerManager->getCurrency());
     DrawText(bankText.c_str(), 10, 10, 30, RED);
 
-    // Tower menu background
+    // Tower menu background (at the bottom of the screen)
     DrawRectangle(0, GetScreenHeight() - towerMenuHeight, GetScreenWidth(), towerMenuHeight, LIGHTGRAY);
     DrawLine(0, GetScreenHeight() - towerMenuHeight, GetScreenWidth(), GetScreenHeight() - towerMenuHeight, BLACK);
 
@@ -85,6 +83,236 @@ void Game::drawTowerMenu() const {
     }
 }
 
+void Game::drawTowerInfoInSideMenu() const {
+    if (!selectedTower) return;
+
+    // Side menu area
+    Rectangle menuRect = {
+        static_cast<float>(GetScreenWidth() - sideMenuWidth),
+        0,
+        static_cast<float>(sideMenuWidth),
+        static_cast<float>(GetScreenHeight() - towerMenuHeight)
+    };
+
+    // Tower info
+    int yPos = 70; // Start below the "Tower Info" title
+    int padding = 10;
+    int fontSize = 20;
+    int smallFontSize = 16;
+
+    // Title
+    std::string titleText = selectedTower->getName();
+    DrawText(titleText.c_str(), menuRect.x + padding, yPos, fontSize, BLACK);
+    yPos += fontSize + padding;
+
+    // Level
+    std::string levelText = "Level: " + std::to_string(selectedTower->getLevel());
+    DrawText(levelText.c_str(), menuRect.x + padding, yPos, smallFontSize, BLACK);
+    yPos += smallFontSize + padding;
+
+    // Stats
+    std::string powerText = "Power: " + std::to_string(static_cast<int>(selectedTower->getPower()));
+    DrawText(powerText.c_str(), menuRect.x + padding, yPos, smallFontSize, BLACK);
+    yPos += smallFontSize + padding;
+
+    std::string rangeText = "Range: " + std::to_string(static_cast<int>(selectedTower->getRange()));
+    DrawText(rangeText.c_str(), menuRect.x + padding, yPos, smallFontSize, BLACK);
+    yPos += smallFontSize + padding;
+
+    std::string rateText = "Fire Rate: " + std::to_string(selectedTower->getFireRate());
+    DrawText(rateText.c_str(), menuRect.x + padding, yPos, smallFontSize, BLACK);
+    yPos += smallFontSize + padding * 2;
+
+    // Special stats for specific tower types
+    if (dynamic_cast<AreaTower*>(selectedTower)) {
+        AreaTower* areaTower = dynamic_cast<AreaTower*>(selectedTower);
+        std::string areaText = "Area: " + std::to_string(static_cast<int>(areaTower->getAreaRadius()));
+        DrawText(areaText.c_str(), menuRect.x + padding, yPos, smallFontSize, BLACK);
+        yPos += smallFontSize + padding;
+    } else if (dynamic_cast<SlowTower*>(selectedTower)) {
+        SlowTower* slowTower = dynamic_cast<SlowTower*>(selectedTower);
+        std::string slowText = "Slow: " + std::to_string(static_cast<int>(slowTower->getSlowEffect() * 100)) + "%";
+        DrawText(slowText.c_str(), menuRect.x + padding, yPos, smallFontSize, BLACK);
+        yPos += smallFontSize + padding;
+
+        std::string durationText = "Duration: " + std::to_string(static_cast<int>(slowTower->getSlowDuration() * 10) / 10.0f) + "s";
+        DrawText(durationText.c_str(), menuRect.x + padding, yPos, smallFontSize, BLACK);
+        yPos += smallFontSize + padding;
+    }
+
+    yPos += padding * 2;
+
+    // Upgrade button
+    Rectangle upgradeButton = {
+        menuRect.x + padding,
+        static_cast<float>(yPos),
+        sideMenuWidth - padding * 2,
+        50
+    };
+
+    bool canAfford = towerManager->canAffordUpgrade(selectedTower);
+    Color buttonColor = canAfford ? GREEN : GRAY;
+
+    DrawRectangleRec(upgradeButton, buttonColor);
+    DrawRectangleLinesEx(upgradeButton, 2, BLACK);
+
+    std::string upgradeText = "Upgrade: $" + std::to_string(selectedTower->getUpgradeCost());
+    float textWidth = MeasureText(upgradeText.c_str(), smallFontSize);
+    DrawText(upgradeText.c_str(),
+             upgradeButton.x + (upgradeButton.width - textWidth) / 2,
+             upgradeButton.y + (upgradeButton.height - smallFontSize) / 2,
+             smallFontSize, BLACK);
+
+    yPos += 50 + padding;
+
+    // Sell button
+    Rectangle sellButton = {
+        menuRect.x + padding,
+        static_cast<float>(yPos),
+        sideMenuWidth - padding * 2,
+        50
+    };
+
+    DrawRectangleRec(sellButton, RED);
+    DrawRectangleLinesEx(sellButton, 2, BLACK);
+
+    std::string sellText = "Sell: $" + std::to_string(selectedTower->getRefundValue());
+    textWidth = MeasureText(sellText.c_str(), smallFontSize);
+    DrawText(sellText.c_str(),
+             sellButton.x + (sellButton.width - textWidth) / 2,
+             sellButton.y + (sellButton.height - smallFontSize) / 2,
+             smallFontSize, BLACK);
+
+    // Show hover effects for buttons
+    Vector2 mousePos = GetMousePosition();
+    if (CheckCollisionPointRec(mousePos, upgradeButton)) {
+        DrawRectangleLinesEx(upgradeButton, 2, WHITE);
+    }
+    if (CheckCollisionPointRec(mousePos, sellButton)) {
+        DrawRectangleLinesEx(sellButton, 2, WHITE);
+    }
+}
+
+void Game::handleTowerInfoMenuClick(Vector2 mousePos) {
+    if (!selectedTower) return;
+
+    // Check if click is in the side menu area
+    Rectangle menuRect = {
+        static_cast<float>(GetScreenWidth() - sideMenuWidth),
+        0,
+        static_cast<float>(sideMenuWidth),
+        static_cast<float>(GetScreenHeight() - towerMenuHeight)
+    };
+
+    if (!CheckCollisionPointRec(mousePos, menuRect)) return;
+
+    int padding = 10;
+    int yPos = 70; // Match the starting position in drawTowerInfoInSideMenu
+    int fontSize = 20;
+    int smallFontSize = 16;
+
+    // Skip past all the text elements
+    yPos += fontSize + padding; // Title
+    yPos += smallFontSize + padding; // Level
+    yPos += smallFontSize + padding; // Power
+    yPos += smallFontSize + padding; // Range
+    yPos += smallFontSize + padding; // Fire Rate
+    yPos += smallFontSize + padding * 2; // Extra spacing
+
+    // Check for special tower types and skip their stats
+    if (dynamic_cast<AreaTower*>(selectedTower)) {
+        yPos += smallFontSize + padding;
+    } else if (dynamic_cast<SlowTower*>(selectedTower)) {
+        yPos += smallFontSize + padding;
+        yPos += smallFontSize + padding;
+    }
+
+    yPos += padding * 2;
+
+    // Upgrade button
+    Rectangle upgradeButton = {
+        menuRect.x + padding,
+        static_cast<float>(yPos),
+        sideMenuWidth - padding * 2,
+        50
+    };
+
+    if (CheckCollisionPointRec(mousePos, upgradeButton)) {
+        if (towerManager->canAffordUpgrade(selectedTower)) {
+            towerManager->upgradeTower(selectedTower);
+        }
+        return;
+    }
+
+    yPos += 50 + padding;
+
+    // Sell button
+    Rectangle sellButton = {
+        menuRect.x + padding,
+        static_cast<float>(yPos),
+        sideMenuWidth - padding * 2,
+        50
+    };
+
+
+    if (CheckCollisionPointRec(mousePos, sellButton)) {
+        // Get the tower's position
+        Vector2 towerPos = selectedTower->getPosition();
+
+        // Calculate grid coordinates from the tower's position
+        int gameAreaHeight = GetScreenHeight() - towerMenuHeight;
+        int gameAreaWidth = GetScreenWidth() - sideMenuWidth;
+        int cellSize = std::min(gameAreaWidth / (currentMap->getWidth() + 2),
+                              gameAreaHeight / (currentMap->getHeight() + 2));
+        int offsetX = (gameAreaWidth - (currentMap->getWidth() * cellSize)) / 2;
+        int offsetY = (gameAreaHeight - (currentMap->getHeight() * cellSize)) / 2;
+
+        // Convert tower position to grid coordinates
+        int gridX = (towerPos.x - offsetX) / cellSize;
+        int gridY = (towerPos.y - offsetY) / cellSize;
+
+        // Reset the cell to scenery
+        if (gridX >= 0 && gridX < currentMap->getWidth() &&
+            gridY >= 0 && gridY < currentMap->getHeight()) {
+            currentMap->setCellType(gridX, gridY, CellType::SCENERY);
+            }
+
+        // Now sell the tower
+        towerManager->sellTower(selectedTower);
+        selectedTower = nullptr;
+        return;
+    }
+}
+
+
+void Game::handleTowerSelection(Vector2 mousePos) {
+    // Don't process tower selection if click is in the tower menu
+    if (mousePos.y >= GetScreenHeight() - towerMenuHeight) return;
+
+    // Don't process tower selection if click is in the side menu
+    if (mousePos.x >= GetScreenWidth() - sideMenuWidth) return;
+
+    // Calculate cell size based on available game area
+    int gameAreaHeight = GetScreenHeight() - towerMenuHeight;
+    int gameAreaWidth = GetScreenWidth() - sideMenuWidth;  // Always account for side menu
+
+    int cellSize = std::min(gameAreaWidth / (currentMap->getWidth() + 2),
+                          gameAreaHeight / (currentMap->getHeight() + 2));
+    int offsetX = (gameAreaWidth - (currentMap->getWidth() * cellSize)) / 2;
+    int offsetY = (gameAreaHeight - (currentMap->getHeight() * cellSize)) / 2;
+
+    // Check if we clicked on a tower
+    selectedTower = nullptr;
+    for (const auto& tower : towerManager->getTowers()) {
+        Vector2 pos = tower->getPosition();
+        float radius = 15.0f;  // Tower radius from draw method
+
+        if (CheckCollisionPointCircle(mousePos, pos, radius)) {
+            selectedTower = tower.get();
+            break;
+        }
+    }
+}
 void Game::handleTowerMenuClick(Vector2 mousePos) {
     if (mousePos.y < GetScreenHeight() - towerMenuHeight) return;
 
@@ -113,6 +341,7 @@ void Game::handleTowerMenuClick(Vector2 mousePos) {
 
             if (towerManager->canAffordTower(towerType)) {
                 selectedTowerType = (selectedTowerType == towerType) ? "" : towerType;
+                selectedTower = nullptr; // Deselect tower when selecting tower type
             }
             break;
         }
@@ -153,16 +382,24 @@ void Game::update() {
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 if (mousePos.y >= GetScreenHeight() - towerMenuHeight) {
                     handleTowerMenuClick(mousePos);
+                } else if (mousePos.x >= GetScreenWidth() - sideMenuWidth) {
+                    handleTowerInfoMenuClick(mousePos);
                 } else if (!selectedTowerType.empty()) {
-                    int cellSize = std::min(GetScreenWidth() / (currentMap->getWidth() + 2),
-                                          GetScreenHeight() / (currentMap->getHeight() + 2));
-                    int offsetX = (GetScreenWidth() - (currentMap->getWidth() * cellSize)) / 2;
-                    int offsetY = (GetScreenHeight() - (currentMap->getHeight() * cellSize)) / 2;
+                    // Calculate available game area (excluding tower menu and always accounting for side menu)
+                    int gameAreaHeight = GetScreenHeight() - towerMenuHeight;
+                    int gameAreaWidth = GetScreenWidth() - sideMenuWidth;
+
+                    int cellSize = std::min(gameAreaWidth / (currentMap->getWidth() + 2),
+                                          gameAreaHeight / (currentMap->getHeight() + 2));
+                    int offsetX = (gameAreaWidth - (currentMap->getWidth() * cellSize)) / 2;
+                    int offsetY = (gameAreaHeight - (currentMap->getHeight() * cellSize)) / 2;
 
                     int gridX = (mousePos.x - offsetX) / cellSize;
                     int gridY = (mousePos.y - offsetY) / cellSize;
 
-                    if (currentMap->getCellType(gridX, gridY) == CellType::SCENERY) {
+                    if (gridX >= 0 && gridX < currentMap->getWidth() &&
+                        gridY >= 0 && gridY < currentMap->getHeight() &&
+                        currentMap->getCellType(gridX, gridY) == CellType::SCENERY) {
                         Vector2 towerPos = {
                             offsetX + gridX * cellSize + cellSize / 2.0f,
                             offsetY + gridY * cellSize + cellSize / 2.0f
@@ -173,11 +410,15 @@ void Game::update() {
                             selectedTowerType = "";
                         }
                     }
+                } else {
+                    // If no tower type selected, check if we're selecting a tower
+                    handleTowerSelection(mousePos);
                 }
             }
 
             if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
                 selectedTowerType = "";
+                selectedTower = nullptr;  // Right-click also deselects tower
             }
 
             updateTowers();
@@ -185,6 +426,7 @@ void Game::update() {
         }
     }
 }
+
 
 void Game::updateTowers() {
     for (const auto& tower : towerManager->getTowers()) {
@@ -274,21 +516,82 @@ void Game::draw() const {
         break;
 
         case GameState::PLAYING:
-            currentMap->draw();
+            // Always account for the side menu width in calculations
+                int gameAreaHeight = GetScreenHeight() - towerMenuHeight;
+        int gameAreaWidth = GetScreenWidth() - sideMenuWidth; // Always subtract side menu width
 
-        // Draw all placed towers
+        int cellSize = std::min(gameAreaWidth / (currentMap->getWidth() + 2),
+                            gameAreaHeight / (currentMap->getHeight() + 2));
+        int offsetX = (gameAreaWidth - (currentMap->getWidth() * cellSize)) / 2;
+        int offsetY = (gameAreaHeight - (currentMap->getHeight() * cellSize)) / 2;
+
+        currentMap->draw(offsetX, offsetY, cellSize);
+
+        // Draw all placed towers (positions will be consistent now)
         for (const auto& tower : towerManager->getTowers()) {
+            // Add a highlight effect for the selected tower
+            if (selectedTower == tower.get()) {
+                DrawCircleLines(tower->getPosition().x, tower->getPosition().y,
+                               20, WHITE);  // Highlight ring
+            }
             tower->draw();
+        }
+
+        // Always draw the side menu background
+        drawSideMenu();
+
+        // Only draw tower info if a tower is selected
+        if (selectedTower) {
+            drawTowerInfoInSideMenu();
+        } else {
+            drawSideMenuDefault(); // Draw default content when no tower is selected
         }
 
         drawTowerShots();
         drawTowerMenu();
 
-        // Draw selection instruction if tower is selected
+        // Draw selection instruction if tower type is selected
         if (!selectedTowerType.empty()) {
             DrawText("Click to place tower (Right click to cancel)",
-                    GetScreenWidth() / 2 - 200, 40, 20, BLACK);
+                    (GetScreenWidth() - sideMenuWidth) / 2 - 100, 40, 20, BLACK);
         }
         break;
     }
 }
+
+void Game::drawSideMenu() const {
+    // Side menu background
+    Rectangle menuRect = {
+        static_cast<float>(GetScreenWidth() - sideMenuWidth),
+        0,
+        static_cast<float>(sideMenuWidth),
+        static_cast<float>(GetScreenHeight() - towerMenuHeight)
+    };
+
+    DrawRectangleRec(menuRect, LIGHTGRAY);
+    DrawRectangleLinesEx(menuRect, 2, BLACK);
+
+    // Draw a title for the side menu
+    DrawText("Tower Info", menuRect.x + 10, 20, 24, BLACK);
+}
+
+void Game::drawSideMenuDefault() const {
+    Rectangle menuRect = {
+        static_cast<float>(GetScreenWidth() - sideMenuWidth),
+        0,
+        static_cast<float>(sideMenuWidth),
+        static_cast<float>(GetScreenHeight() - towerMenuHeight)
+    };
+
+    // Display instructions text
+    DrawText("Select a tower", menuRect.x + 10, 70, 20, DARKGRAY);
+    DrawText("to view info", menuRect.x + 10, 100, 20, DARKGRAY);
+
+    // Maybe add some general game stats
+    DrawText("Game Stats:", menuRect.x + 10, 150, 18, BLACK);
+
+    // Example stats (replace with actual game stats)
+    std::string towersText = "Towers: " + std::to_string(towerManager->getTowers().size());
+    DrawText(towersText.c_str(), menuRect.x + 10, 180, 16, BLACK);
+}
+

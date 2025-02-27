@@ -34,11 +34,11 @@ public:
     void generateRandomMap();
     CellType getCellType(int x, int y) const;
     bool placeTower(int x, int y);
-    void draw() const;
+    void draw(int offsetX = 0, int offsetY = 0, int cellSize = 0) const;
     Vector2 getEntryPoint() const { return entryPoint; }
     Vector2 getExitPoint() const { return exitPoint; }
     int getWidth() const { return width; }
     int getHeight() const { return height; }
-    bool validateMap() const; // Added to replace isValid()
-    void setCellType(int x, int y, CellType type); // Added missing function
+    bool validateMap() const;
+    void setCellType(int x, int y, CellType type);
 };

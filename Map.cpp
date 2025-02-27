@@ -114,45 +114,40 @@ bool Map::placeTower(int x, int y) {
     return true;
 }
 
-void Map::draw() const {
-    // Calculate offset to center the map
-    int offsetX = (GetScreenWidth() - (width * CELL_SIZE)) / 2;
-    int offsetY = (GetScreenHeight() - (height * CELL_SIZE)) / 2;
+// Replace your current Map::draw() function with this version
+void Map::draw(int offsetX, int offsetY, int cellSize) const {
+    // If parameters aren't provided, calculate default values
+    if (cellSize == 0) {
+        cellSize = std::min(GetScreenWidth() / (width + 2), GetScreenHeight() / (height + 2));
+        offsetX = (GetScreenWidth() - (width * cellSize)) / 2;
+        offsetY = (GetScreenHeight() - (height * cellSize)) / 2;
+    }
 
+    // Draw the map grid with the provided parameters
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            Rectangle cell = {
-                static_cast<float>(offsetX + x * CELL_SIZE),
-                static_cast<float>(offsetY + y * CELL_SIZE),
-                static_cast<float>(CELL_SIZE),
-                static_cast<float>(CELL_SIZE)
+            Rectangle cellRect = {
+                static_cast<float>(offsetX + x * cellSize),
+                static_cast<float>(offsetY + y * cellSize),
+                static_cast<float>(cellSize),
+                static_cast<float>(cellSize)
             };
 
-            Color color;
+            Color cellColor;
             switch (grid[y][x]) {
-                case CellType::PATH:
-                    color = BROWN;
-                    break;
-                case CellType::SCENERY:
-                    color = GREEN;
-                    break;
-                case CellType::ENTRY:
-                    color = BLUE;
-                    break;
-                case CellType::EXIT:
-                    color = RED;
-                    break;
-                case CellType::TOWER:
-                    color = PURPLE;
-                    break;
+                case CellType::SCENERY: cellColor = GREEN; break;
+                case CellType::PATH: cellColor = BROWN; break;
+                case CellType::ENTRY: cellColor = BLUE; break;
+                case CellType::EXIT: cellColor = RED; break;
+                case CellType::TOWER: cellColor = GRAY; break;
+                default: cellColor = LIGHTGRAY;
             }
 
-            DrawRectangleRec(cell, color);
-            DrawRectangleLinesEx(cell, 1, BLACK);
+            DrawRectangleRec(cellRect, cellColor);
+            DrawRectangleLinesEx(cellRect, 1, BLACK);
         }
     }
 }
-
 void Map::setCellType(int x, int y, CellType type) {
     if (isValidCoordinate(x, y)) {
         grid[y][x] = type;
