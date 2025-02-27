@@ -100,6 +100,7 @@ void Game::drawTowerInfoInSideMenu() const {
     int fontSize = 20;
     int smallFontSize = 16;
 
+
     // Title
     std::string titleText = selectedTower->getName();
     DrawText(titleText.c_str(), menuRect.x + padding, yPos, fontSize, BLACK);
@@ -120,6 +121,7 @@ void Game::drawTowerInfoInSideMenu() const {
     yPos += smallFontSize + padding;
 
     std::string rateText = "Fire Rate: " + std::to_string(selectedTower->getFireRate());
+
     DrawText(rateText.c_str(), menuRect.x + padding, yPos, smallFontSize, BLACK);
     yPos += smallFontSize + padding * 2;
 
@@ -143,6 +145,8 @@ void Game::drawTowerInfoInSideMenu() const {
     yPos += padding * 2;
 
     // Upgrade button
+    int buttonSpacing = 20;
+    int buttonHeight = 50;
     Rectangle upgradeButton = {
         menuRect.x + padding,
         static_cast<float>(yPos),
@@ -150,11 +154,13 @@ void Game::drawTowerInfoInSideMenu() const {
         50
     };
 
+    bool upgradeHovered = CheckCollisionPointRec(GetMousePosition(), upgradeButton);
     bool canAfford = towerManager->canAffordUpgrade(selectedTower);
     Color buttonColor = canAfford ? GREEN : GRAY;
+    Color outlineColor = upgradeHovered ? WHITE : BLACK;
 
     DrawRectangleRec(upgradeButton, buttonColor);
-    DrawRectangleLinesEx(upgradeButton, 2, BLACK);
+    DrawRectangleLinesEx(upgradeButton, upgradeHovered ? 3 : 2, outlineColor);
 
     std::string upgradeText = "Upgrade: $" + std::to_string(selectedTower->getUpgradeCost());
     float textWidth = MeasureText(upgradeText.c_str(), smallFontSize);
@@ -163,7 +169,7 @@ void Game::drawTowerInfoInSideMenu() const {
              upgradeButton.y + (upgradeButton.height - smallFontSize) / 2,
              smallFontSize, BLACK);
 
-    yPos += 50 + padding;
+    yPos += buttonHeight + buttonSpacing;
 
     // Sell button
     Rectangle sellButton = {
@@ -172,6 +178,9 @@ void Game::drawTowerInfoInSideMenu() const {
         sideMenuWidth - padding * 2,
         50
     };
+
+    bool sellHovered = CheckCollisionPointRec(GetMousePosition(), sellButton);
+    outlineColor = sellHovered ? WHITE : BLACK;
 
     DrawRectangleRec(sellButton, RED);
     DrawRectangleLinesEx(sellButton, 2, BLACK);
@@ -277,9 +286,10 @@ void Game::handleTowerInfoMenuClick(Vector2 mousePos) {
             currentMap->setCellType(gridX, gridY, CellType::SCENERY);
             }
 
-        // Now sell the tower
-        towerManager->sellTower(selectedTower);
-        selectedTower = nullptr;
+        if (selectedTower) {
+            towerManager->sellTower(selectedTower);
+            selectedTower = nullptr;
+        }
         return;
     }
 }
@@ -378,12 +388,15 @@ void Game::update() {
 
         case GameState::PLAYING: {
             Vector2 mousePos = GetMousePosition();
+            bool processed = false;
 
             if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
                 if (mousePos.y >= GetScreenHeight() - towerMenuHeight) {
                     handleTowerMenuClick(mousePos);
+                    processed = true;
                 } else if (mousePos.x >= GetScreenWidth() - sideMenuWidth) {
                     handleTowerInfoMenuClick(mousePos);
+                    processed = true;
                 } else if (!selectedTowerType.empty()) {
                     // Calculate available game area (excluding tower menu and always accounting for side menu)
                     int gameAreaHeight = GetScreenHeight() - towerMenuHeight;
@@ -410,7 +423,8 @@ void Game::update() {
                             selectedTowerType = "";
                         }
                     }
-                } else {
+                    processed = true;
+                } else if (!processed){
                     // If no tower type selected, check if we're selecting a tower
                     handleTowerSelection(mousePos);
                 }
@@ -553,7 +567,7 @@ void Game::draw() const {
         // Draw selection instruction if tower type is selected
         if (!selectedTowerType.empty()) {
             DrawText("Click to place tower (Right click to cancel)",
-                    (GetScreenWidth() - sideMenuWidth) / 2 - 100, 40, 20, BLACK);
+                    (GetScreenWidth() - sideMenuWidth) / 2 - 100, 20, 20, BLACK);
         }
         break;
     }
