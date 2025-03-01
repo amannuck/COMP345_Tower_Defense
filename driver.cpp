@@ -1,148 +1,113 @@
 /**
- * @file driver.cpp
- * @brief Main game loop for the Tower Defense game.
+ * @file main.cpp
+ * @brief Tower Defense game with SFML GUI.
  */
 
+#include <SFML/Graphics.hpp>
+#include <vector>
 #include "mapgen.h"
-#include "critter.h"
 #include "tower.h"
 #include "CritterGroup.h"
-#include <iostream>
-#include <chrono>
-#include <thread>
-#include <vector>
 
 using namespace std;
 
+const int TILE_SIZE = 40;  // Size of each grid tile in pixels
+
 /**
- * @brief Displays the game map with critters and towers.
- *
- * This function prints a **10x10 grid**, displaying:
- * - `C` for Critters
- * - `T` for Towers
- * - `E` for Entry
- * - `X` for Exit
- * - `#` for Path
- * - `.` for Empty Land
- *
- * @param map The game map.
- * @param critters List of active critters.
- * @param towers List of placed towers.
+ * @brief Renders the game map and objects using SFML.
+ * @param window SFML window reference.
+ * @param map The game map object.
+ * @param towers The list of placed towers.
+ * @param critters The list of active critters.
  */
-void displayGameState(const Map& map, const vector<Critter>& critters, const vector<Tower*>& towers) {
-    auto entry = map.getEntry();
-    auto exit = map.getExit();
+void renderMap(sf::RenderWindow &window, Map &map, vector<Tower*> &towers, vector<Critter> &critters) {
+    window.clear();
 
-    for (int y = 0; y < 10; y++) {
-        for (int x = 0; x < 10; x++) {
-            bool hasCritter = false;
-            bool hasTower = false;
+    for (int y = 0; y < map.getHeight(); y++) {
+        for (int x = 0; x < map.getWidth(); x++) {
+            sf::RectangleShape tile(sf::Vector2f(TILE_SIZE, TILE_SIZE));
+            tile.setPosition(x * TILE_SIZE, y * TILE_SIZE);
 
-            // Check if a critter is at this position
-            for (const auto& critter : critters) {
-                if (critter.getPosition() == make_pair(x, y)) {
-                    cout << "C ";
-                    hasCritter = true;
-                    break;
-                }
+            // Set colors based on cell type
+            if (map.isPath(x, y)) {
+                tile.setFillColor(sf::Color(150, 75, 0)); // Brown for path
+            } else {
+                tile.setFillColor(sf::Color(50, 205, 50)); // Green for scenery
             }
-
-            // Check if a tower is at this position
-            if (!hasCritter) {
-                for (const auto& tower : towers) {
-                    if (tower->getX() == x && tower->getY() == y) {
-                        cout << "T ";
-                        hasTower = true;
-                        break;
-                    }
-                }
-            }
-
-            // Display map elements
-            if (!hasCritter && !hasTower) {
-                if (make_pair(x, y) == entry) {
-                    cout << "E ";
-                } else if (make_pair(x, y) == exit) {
-                    cout << "X ";
-                } else if (map.isPath(x, y)) {
-                    cout << "# ";
-                } else {
-                    cout << ". ";
-                }
-            }
+            window.draw(tile);
         }
-        cout << endl;
     }
-    cout << "\nLegend: C = Critter, T = Tower, E = Entry, X = Exit, # = Path, . = Scenery\n";
+
+    // Draw towers
+    for (Tower* tower : towers) {
+        sf::CircleShape towerShape(TILE_SIZE / 2 - 5);
+        towerShape.setPosition(tower->getX() * TILE_SIZE + 5, tower->getY() * TILE_SIZE + 5);
+        towerShape.setFillColor(sf::Color::Blue);
+        window.draw(towerShape);
+    }
+
+    // Draw critters
+    for (const Critter &critter : critters) {
+        sf::CircleShape critterShape(TILE_SIZE / 2 - 8);
+        critterShape.setPosition(critter.getPosition().first * TILE_SIZE + 8, critter.getPosition().second * TILE_SIZE + 8);
+        critterShape.setFillColor(sf::Color::Red);
+        window.draw(critterShape);
+    }
+
+    window.display();
 }
 
-/**
- * @brief Main function to run the Tower Defense game.
- *
- * Initializes the map, places towers, generates waves of critters, and runs the game loop.
- *
- * @return 0 on successful execution.
- */
 int main() {
-    // Create a 10x10 game map
-    Map map(10, 10);
-    map.generateRandomMap();
+    // Initialize the game map (10x10)
+    Map gameMap(10, 10);
+    gameMap.generateRandomMap();
 
-    // Create towers and register them on the map
+    // Tower list
     vector<Tower*> towers;
 
-    if (map.placeTower(2, 3)) towers.push_back(new BasicTower(2, 3));
-    if (map.placeTower(5, 5)) towers.push_back(new AoETower(5, 5));
-    // if (map.placeTower(8, 6)) towers.push_back(new SlowTower(8, 6));
-
-    // Display initial map state with towers
-    cout << "Initial map state with towers:" << endl;
-    displayGameState(map, {}, towers);
-
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-
-    // Create critter group (enemies)
-    CritterGroup group(&map);
-
-    // Generate the first wave of critters
+    // Critter management
+    CritterGroup group(&gameMap);
     int numCritters = group.generateWave();
-    cout << "Generated wave with " << numCritters << " critters" << endl;
 
-    // Main game simulation loop
-    while (!group.isWaveComplete()) {
-        // Try to spawn a new critter
+    // Create SFML window
+    sf::RenderWindow window(sf::VideoMode(400, 400), "Tower Defense Game");
+
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+
+            // Handle mouse click to place a tower
+            if (event.type == sf::Event::MouseButtonPressed) {
+                int x = event.mouseButton.x / TILE_SIZE;
+                int y = event.mouseButton.y / TILE_SIZE;
+                placeTowerInteractive(gameMap, towers, x, y);
+            }
+        }
+
+        // Game logic: move critters and attack them
         group.spawnNextCritter();
+        vector<Critter> crittersCopy = group.getActiveCritters();  // Get active critters
 
-        // Get all active critters
-        vector<Critter> crittersCopy = group.getActiveCritters(); // Create a copy to avoid modifying const reference
-
-        // Display current game state
-        displayGameState(map, crittersCopy, towers);
-
-        // Towers attack critters (modifying crittersCopy instead of original critters)
         for (Tower* tower : towers) {
             tower->attack(crittersCopy);
         }
 
-        // Move all critters toward the exit
         group.moveAllCritters([](int damage) {
             cout << "A critter reached the exit! Player takes " << damage << " damage!\n";
         });
 
-        // Wait before the next update (controls game speed)
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
-        // Display wave status
-        cout << "Active critters: " << crittersCopy.size()
-             << ", Remaining spawns: " << group.getRemainingSpawns() << endl;
+        // Render game objects
+        renderMap(window, gameMap, towers, crittersCopy);
     }
 
-    cout << "\nWave complete! All critters are gone!" << endl;
-
-    // Free memory (since towers were created dynamically)
+    // Free memory (delete dynamically allocated towers)
     for (Tower* tower : towers) {
         delete tower;
     }
 
     return 0;
 }
+
