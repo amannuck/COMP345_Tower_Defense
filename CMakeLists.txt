@@ -33,11 +33,17 @@ add_executable(${PROJECT_NAME} main.cpp
         Game.cpp
         Tower.cpp
         Tower.h
+        TowerObserver.h
         TowerManager.cpp
         TowerManager.h
         IObserver.h
         MapObserver.cpp
         MapObserver.h
+        CritterWave.h
+        CritterWave.cpp
+        critter.h
+        critter.cpp
+        CritterObserver.h
 )
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
