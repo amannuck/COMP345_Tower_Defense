@@ -1,108 +1,73 @@
-/**
- * @file tower.cpp
- * @brief Implementation of the Tower class for the Tower Defense game.
- */
+//
+// Created by amann on 23/02/2025.
+//
+// Tower.cpp
+#include "Tower.h"
+#include <cmath>
 
-#include "tower.h"
+Tower::Tower(float range, float power, float fireRate, int buyCost, int upgradeCost,
+             const std::string& name, const Color& color)
+        : level(1), range(range), power(power), fireRate(fireRate), lastShotTime(0),
+          position({0, 0}), buyCost(buyCost), upgradeCost(upgradeCost), name(name), color(color) {}
 
-/**
- * @brief Constructs a Tower object with specified properties.
- */
-Tower::Tower(int x, int y, int cost, int refund, int range, int power, int fireRate, int upgradeCost)
-    : x(x), y(y), buyCost(cost), refundValue(refund), range(range), power(power), fireRate(fireRate), upgradeCost(upgradeCost), level(1) {
-    cout << "Tower created at (" << x << ", " << y << ")\n";
-}
+Tower::~Tower() {}
 
-/**
- * @brief Upgrades the tower, increasing attack power and refund value.
- */
+
 void Tower::upgrade() {
-    if (level < 3) {
-        level++;
-        power += 5;
-        refundValue += 25;
-        cout << "Tower at (" << x << ", " << y << ") upgraded to level " << level << "!\n";
-    } else {
-        cout << "Tower is already at max level!\n";
-    }
+    level++;
+    range *= 1.2f;
+    power *= 1.3f;
+    fireRate *= 1.1f;
+    upgradeCost = static_cast<int>(upgradeCost * 1.5f);
 }
 
-/**
- * @brief Constructs a BasicTower with predefined attributes.
- */
-BasicTower::BasicTower(int x, int y) : Tower(x, y, 100, 50, 3, 10, 1, 50) {}
-
-/**
- * @brief Attacks the first critter within range.
- */
-void BasicTower::attack(vector<Critter>& critters) {
-    for (Critter& critter : critters) {
-        if (critter.isDead()) continue;
-        if (abs(critter.getPosition().first - x) + abs(critter.getPosition().second - y) <= range) {
-            critter.takeDamage(power);
-            cout << "BasicTower at (" << x << ", " << y << ") hit a critter for " << power << " damage!\n";
-            return;
-        }
-    }
+int Tower::getRefundValue() const {
+    float totalCost = buyCost;
+    float refundRatio = 0.7f;  // 70% refund
+    return static_cast<int>(totalCost * refundRatio);
 }
 
-/**
- * @brief Constructs an AoETower with predefined attributes.
- */
-AoETower::AoETower(int x, int y) : Tower(x, y, 200, 100, 2, 7, 1, 75) {}
+void Tower::draw() const {
+    // Draw tower
+    DrawCircle(position.x, position.y, 15, color);
 
-/**
- * @brief Attacks multiple critters within range.
- */
-void AoETower::attack(vector<Critter>& critters) {
-    for (Critter& critter : critters) {
-        if (critter.isDead()) continue;
-        if (abs(critter.getPosition().first - x) + abs(critter.getPosition().second - y) <= range) {
-            critter.takeDamage(power);
-            cout << "AoETower at (" << x << ", " << y << ") hit multiple critters for " << power << " damage!\n";
-        }
-    }
+    // Draw level indicator
+    std::string levelText = "Lvl " + std::to_string(level);
+    DrawText(levelText.c_str(), position.x - 10, position.y - 25, 10, BLACK);
 }
 
-/**
- * @brief Allows the user to place a tower interactively.
- */
-void placeTowerInteractive(Map& map, vector<Tower*>& towers) {
-    int x, y;
-    cout << "Enter tower coordinates (x y): ";
-    cin >> x >> y;
+bool Tower::canShoot() const {
+    return GetTime() - lastShotTime >= 1.0f / fireRate;
+}
 
-    if (!map.isValidCoordinate(x, y)) {
-        cout << "Invalid coordinates!\n";
-        return;
-    }
+void Tower::resetShotTimer() {
+    lastShotTime = GetTime();
+}
 
-    if (map.isPath(x, y)) {
-        cout << "Cannot place a tower on a path!\n";
-        return;
-    }
+BasicTower::BasicTower()
+        : Tower(150.0f, 10.0f, 1.0f, 100, 50, "Basic Tower", RED) {}
 
-    for (Tower* t : towers) {
-        if (t->getX() == x && t->getY() == y) {
-            cout << "There is already a tower here!\n";
-            return;
-        }
-    }
+void BasicTower::upgrade() {
+    Tower::upgrade();
+    // Basic tower gets extra power on upgrade
+    power *= 1.1f;
+}
 
-    cout << "Choose a tower type:\n1. Basic Tower (100 gold)\n2. AoE Tower (200 gold)\nEnter choice: ";
-    int choice;
-    cin >> choice;
+AreaTower::AreaTower()
+        : Tower(120.0f, 8.0f, 0.8f, 150, 75, "Area Tower", BLUE), areaRadius(40.0f) {}
 
-    Tower* newTower = nullptr;
-    if (choice == 1) {
-        newTower = new BasicTower(x, y);
-    } else if (choice == 2) {
-        newTower = new AoETower(x, y);
-    } else {
-        cout << "Invalid choice!\n";
-        return;
-    }
+void AreaTower::upgrade() {
+    Tower::upgrade();
+    areaRadius *= 1.2f;
+}
 
-    towers.push_back(newTower);
-    cout << "Tower placed at (" << x << ", " << y << ")\n";
+
+SlowTower::SlowTower()
+        : Tower(130.0f, 5.0f, 1.2f, 125, 60, "Slow Tower", YELLOW),
+          slowEffect(0.3f), slowDuration(2.0f) {}
+
+void SlowTower::upgrade() {
+    Tower::upgrade();
+    slowEffect *= 1.15f;
+    slowDuration *= 1.1f;
 }

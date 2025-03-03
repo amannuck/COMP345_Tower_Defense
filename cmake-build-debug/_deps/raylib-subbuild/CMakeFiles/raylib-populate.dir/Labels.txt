@@ -1,0 +1,14 @@
+# Target labels
+ raylib-populate
+# Source files and their labels
+/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug/_deps/raylib-subbuild/CMakeFiles/raylib-populate
+/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug/_deps/raylib-subbuild/CMakeFiles/raylib-populate.rule
+/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug/_deps/raylib-subbuild/CMakeFiles/raylib-populate-complete.rule
+/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug/_deps/raylib-subbuild/raylib-populate-prefix/src/raylib-populate-stamp/raylib-populate-build.rule
+/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug/_deps/raylib-subbuild/raylib-populate-prefix/src/raylib-populate-stamp/raylib-populate-configure.rule
+/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug/_deps/raylib-subbuild/raylib-populate-prefix/src/raylib-populate-stamp/raylib-populate-download.rule
+/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug/_deps/raylib-subbuild/raylib-populate-prefix/src/raylib-populate-stamp/raylib-populate-install.rule
+/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug/_deps/raylib-subbuild/raylib-populate-prefix/src/raylib-populate-stamp/raylib-populate-mkdir.rule
+/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug/_deps/raylib-subbuild/raylib-populate-prefix/src/raylib-populate-stamp/raylib-populate-patch.rule
+/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug/_deps/raylib-subbuild/raylib-populate-prefix/src/raylib-populate-stamp/raylib-populate-test.rule
+/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug/_deps/raylib-subbuild/raylib-populate-prefix/src/raylib-populate-stamp/raylib-populate-update.rule

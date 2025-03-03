@@ -1,20 +1,17 @@
-## Instructions to run program.
+# Raylib Installation Guide
 
-### Using CLion
-1. Open CLion
-2. Go to File -> Open
-3. Navigate to the project directory and click Open
-4. CLion should automatically detect the CMake configuration
-5. Click the Build button (hammer icon) or press Ctrl+F9 (Cmd+F9 on macOS)
+Raylib is a simple and easy-to-use C library for game development. This guide provides installation instructions for Windows, macOS, and Linux.
 
-### Using Command Line
-```bash
-# Create and enter build directory
-mkdir build
-cd build
 
-# Generate build files
-cmake ..
+## Installation and Integration into Project (on CLion)
 
-# Build the project
-cmake --build .
+### Windows
+1. Download raylib Installer from [(raylib.com)](https://www.raylib.com/)
+2. Copy and paste the CMakeLists.txt from "C:\raylib\raylib\projects\CMake" folder into your current project's folder.
+3. Make sure to change the 'project(<project_name>)' and 'add_executable <filename.cpp>' in the CMakeLists.txt.
+4. Include "raylib.h" in your implementation.
+5. If it is not running, try to add the line "set(CMAKE_CXX_STANDARD 17)" to the CMakeLists.txt.
+
+### Useful links
+- [https://youtu.be/maR-qQqC0nM?si=URJMjyvOzh4_WDDw](https://youtu.be/maR-qQqC0nM?si=URJMjyvOzh4_WDDw)
+- [https://youtu.be/PaAcVk5jUd8?si=z6xFGHu8isYZOVBM](https://youtu.be/PaAcVk5jUd8?si=z6xFGHu8isYZOVBM)

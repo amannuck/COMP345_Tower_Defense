@@ -1,0 +1,50 @@
+[
+{
+  "directory": "/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -isystem /opt/homebrew/include -g -std=c++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk -fcolor-diagnostics -o CMakeFiles/defenseGUI.dir/main.cpp.o -c /Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/main.cpp",
+  "file": "/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/main.cpp",
+  "output": "CMakeFiles/defenseGUI.dir/main.cpp.o"
+},
+{
+  "directory": "/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -isystem /opt/homebrew/include -g -std=c++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk -fcolor-diagnostics -o CMakeFiles/defenseGUI.dir/Map.cpp.o -c /Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/Map.cpp",
+  "file": "/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/Map.cpp",
+  "output": "CMakeFiles/defenseGUI.dir/Map.cpp.o"
+},
+{
+  "directory": "/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -isystem /opt/homebrew/include -g -std=c++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk -fcolor-diagnostics -o CMakeFiles/defenseGUI.dir/MapEditor.cpp.o -c /Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/MapEditor.cpp",
+  "file": "/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/MapEditor.cpp",
+  "output": "CMakeFiles/defenseGUI.dir/MapEditor.cpp.o"
+},
+{
+  "directory": "/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -isystem /opt/homebrew/include -g -std=c++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk -fcolor-diagnostics -o CMakeFiles/defenseGUI.dir/Game.cpp.o -c /Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/Game.cpp",
+  "file": "/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/Game.cpp",
+  "output": "CMakeFiles/defenseGUI.dir/Game.cpp.o"
+},
+{
+  "directory": "/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -isystem /opt/homebrew/include -g -std=c++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk -fcolor-diagnostics -o CMakeFiles/defenseGUI.dir/Tower.cpp.o -c /Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/Tower.cpp",
+  "file": "/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/Tower.cpp",
+  "output": "CMakeFiles/defenseGUI.dir/Tower.cpp.o"
+},
+{
+  "directory": "/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -isystem /opt/homebrew/include -g -std=c++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk -fcolor-diagnostics -o CMakeFiles/defenseGUI.dir/TowerManager.cpp.o -c /Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/TowerManager.cpp",
+  "file": "/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/TowerManager.cpp",
+  "output": "CMakeFiles/defenseGUI.dir/TowerManager.cpp.o"
+},
+{
+  "directory": "/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -isystem /opt/homebrew/include -g -std=c++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk -fcolor-diagnostics -o CMakeFiles/defenseGUI.dir/Critter.cpp.o -c /Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/Critter.cpp",
+  "file": "/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/Critter.cpp",
+  "output": "CMakeFiles/defenseGUI.dir/Critter.cpp.o"
+},
+{
+  "directory": "/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug",
+  "command": "/Library/Developer/CommandLineTools/usr/bin/c++  -isystem /opt/homebrew/include -g -std=c++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk -fcolor-diagnostics -o CMakeFiles/defenseGUI.dir/CritterWave.cpp.o -c /Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/CritterWave.cpp",
+  "file": "/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/CritterWave.cpp",
+  "output": "CMakeFiles/defenseGUI.dir/CritterWave.cpp.o"
+}
+]

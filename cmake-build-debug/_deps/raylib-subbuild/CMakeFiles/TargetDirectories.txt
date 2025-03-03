@@ -1,0 +1,3 @@
+/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug/_deps/raylib-subbuild/CMakeFiles/raylib-populate.dir
+/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug/_deps/raylib-subbuild/CMakeFiles/edit_cache.dir
+/Users/ishaicohen/Downloads/COMP345_Tower_Defense-Part2/cmake-build-debug/_deps/raylib-subbuild/CMakeFiles/rebuild_cache.dir
