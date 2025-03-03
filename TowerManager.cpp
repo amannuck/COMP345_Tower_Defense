@@ -1,9 +1,6 @@
-//
-// Created by amann on 23/02/2025.
-//
-
 #include "TowerManager.h"
 #include <algorithm>
+#include <iostream>
 
 TowerManager::TowerManager(int initialCurrency) : playerCurrency(initialCurrency) {}
 
@@ -21,6 +18,10 @@ bool TowerManager::buyTower(const std::string& towerType, Vector2 position) {
     if (!tower || playerCurrency < tower->getBuyCost()) return false;
 
     playerCurrency -= tower->getBuyCost();
+    
+    // Register as observer before setting position to catch the TOWER_PLACED event
+    tower->addObserver(this);
+    
     tower->setPosition(position);
     towers.push_back(std::move(tower));
     return true;
@@ -39,6 +40,9 @@ int TowerManager::sellTower(Tower* tower) {
 
     int refundValue = tower->getRefundValue();
     playerCurrency += refundValue;
+    
+    // Notify observers before removing the tower
+    tower->notifyObservers(TowerEventType::TOWER_SOLD);
 
     // Remove the tower from the vector
     towers.erase(
@@ -51,8 +55,40 @@ int TowerManager::sellTower(Tower* tower) {
 }
 
 std::unique_ptr<Tower> TowerManager::createTower(const std::string& towerType) const {
-    if (towerType == "Basic") return std::make_unique<BasicTower>();
-    if (towerType == "Area") return std::make_unique<AreaTower>();
-    if (towerType == "Slow") return std::make_unique<SlowTower>();
-    return nullptr;
+    std::unique_ptr<Tower> tower = nullptr;
+    
+    if (towerType == "Basic") tower = std::make_unique<BasicTower>();
+    else if (towerType == "Area") tower = std::make_unique<AreaTower>();
+    else if (towerType == "Slow") tower = std::make_unique<SlowTower>();
+    
+    return tower;
+}
+
+// Observer pattern implementation
+void TowerManager::onTowerEvent(Tower* tower, TowerEventType eventType) {
+    if (!tower) return;
+    
+    switch (eventType) {
+        case TowerEventType::TOWER_FIRED:
+            // Handle tower firing event
+            std::cout << "Tower " << tower->getName() << " fired!" << std::endl;
+            break;
+            
+        case TowerEventType::TOWER_UPGRADED:
+            // Handle tower upgrade event
+            std::cout << "Tower " << tower->getName() << " upgraded to level " 
+                      << tower->getLevel() << "!" << std::endl;
+            break;
+            
+        case TowerEventType::TOWER_SOLD:
+            // Handle tower sold event
+            std::cout << "Tower " << tower->getName() << " was sold!" << std::endl;
+            break;
+            
+        case TowerEventType::TOWER_PLACED:
+            // Handle tower placement event
+            std::cout << "New " << tower->getName() << " placed at position (" 
+                      << tower->getPosition().x << ", " << tower->getPosition().y << ")!" << std::endl;
+            break;
+    }
 }

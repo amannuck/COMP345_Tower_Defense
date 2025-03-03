@@ -1,9 +1,6 @@
-//
-// Created by amann on 23/02/2025.
-//
-// Tower.cpp
 #include "Tower.h"
 #include <cmath>
+#include <algorithm>
 
 Tower::Tower(float range, float power, float fireRate, int buyCost, int upgradeCost,
              const std::string& name, const Color& color)
@@ -12,13 +9,15 @@ Tower::Tower(float range, float power, float fireRate, int buyCost, int upgradeC
 
 Tower::~Tower() {}
 
-
 void Tower::upgrade() {
     level++;
     range *= 1.2f;
     power *= 1.3f;
     fireRate *= 1.1f;
     upgradeCost = static_cast<int>(upgradeCost * 1.5f);
+    
+    // Notify observers
+    notifyObservers(TowerEventType::TOWER_UPGRADED);
 }
 
 int Tower::getRefundValue() const {
@@ -42,6 +41,42 @@ bool Tower::canShoot() const {
 
 void Tower::resetShotTimer() {
     lastShotTime = GetTime();
+    
+    // Notify observers when tower fires
+    notifyObservers(TowerEventType::TOWER_FIRED);
+}
+
+void Tower::setPosition(Vector2 pos) {
+    position = pos;
+    
+    // Notify observers when tower is placed
+    notifyObservers(TowerEventType::TOWER_PLACED);
+}
+
+// Observer pattern methods implementation
+void Tower::addObserver(ITowerObserver* observer) {
+    if (observer) {
+        // Check if observer already exists
+        auto it = std::find(observers.begin(), observers.end(), observer);
+        if (it == observers.end()) {
+            observers.push_back(observer);
+        }
+    }
+}
+
+void Tower::removeObserver(ITowerObserver* observer) {
+    if (observer) {
+        observers.erase(
+            std::remove(observers.begin(), observers.end(), observer),
+            observers.end()
+        );
+    }
+}
+
+void Tower::notifyObservers(TowerEventType eventType) {
+    for (auto observer : observers) {
+        observer->onTowerEvent(this, eventType);
+    }
 }
 
 BasicTower::BasicTower()
@@ -51,6 +86,7 @@ void BasicTower::upgrade() {
     Tower::upgrade();
     // Basic tower gets extra power on upgrade
     power *= 1.1f;
+    // No need to notify observers here as it's already done in Tower::upgrade()
 }
 
 AreaTower::AreaTower()
@@ -59,8 +95,8 @@ AreaTower::AreaTower()
 void AreaTower::upgrade() {
     Tower::upgrade();
     areaRadius *= 1.2f;
+    // No need to notify observers here as it's already done in Tower::upgrade()
 }
-
 
 SlowTower::SlowTower()
         : Tower(130.0f, 5.0f, 1.2f, 125, 60, "Slow Tower", YELLOW),
@@ -70,4 +106,5 @@ void SlowTower::upgrade() {
     Tower::upgrade();
     slowEffect *= 1.15f;
     slowDuration *= 1.1f;
+    // No need to notify observers here as it's already done in Tower::upgrade()
 }

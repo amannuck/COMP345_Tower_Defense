@@ -2,8 +2,10 @@
 #include <raylib.h>
 #include <string>
 #include <memory>
+#include <vector>
+#include "TowerObserver.h"
 
-class Tower {
+class Tower : public ITowerSubject {
 protected:
     int level;
     float range;
@@ -15,6 +17,9 @@ protected:
     int upgradeCost;
     std::string name;
     Color color;
+    
+    // Observer pattern - list of observers
+    std::vector<ITowerObserver*> observers;
 
 public:
     Tower(float range, float power, float fireRate, int buyCost, int upgradeCost,
@@ -35,9 +40,14 @@ public:
     const std::string& getName() const { return name; }
     Vector2 getPosition() const { return position; }
 
-    void setPosition(Vector2 pos) { position = pos; }
+    void setPosition(Vector2 pos);
     bool canShoot() const;
     void resetShotTimer();
+
+    // Observer pattern methods
+    void addObserver(ITowerObserver* observer) override;
+    void removeObserver(ITowerObserver* observer) override;
+    void notifyObservers(TowerEventType eventType) override;
 };
 
 
