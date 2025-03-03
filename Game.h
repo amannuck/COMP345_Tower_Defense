@@ -4,7 +4,7 @@
 #include <vector>
 #include "TowerManager.h"
 #include "CritterWave.h"
-
+#include "TowerObserver.h"
 
 enum class GameState {
     MAP_SELECTION,
