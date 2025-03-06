@@ -31,7 +31,7 @@ CritterWave::CritterWave(int waveLevel, const std::vector<Vector2>& path)
 
     int critterCount = 5 + waveLevel;
     for (int i = 0; i < critterCount; i++) {
-        float speed = 0.03f + (waveLevel * 0.01f);
+        float speed = 0.03f + (waveLevel * 0.002f);
         float hp = 50.0f + (waveLevel * 10);
         int reward = 10 + (waveLevel * 2);
         int strength = 2 + waveLevel;
