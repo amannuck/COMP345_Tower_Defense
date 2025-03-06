@@ -58,7 +58,7 @@ public:
     void takeDamage(float damage);
     bool isDead() const;
     bool reachedEnd() const;
-    void draw() const;
+    void draw(int offsetX = 0, int offsetY = 0, int cellSize = 1) const;
     void activate();
     bool isActive() const { return active; }
 

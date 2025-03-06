@@ -102,11 +102,11 @@ void CritterWave::update(float deltaTime) {
 //
 //    std::cout << "🎨 Drawing " << drawnCritters << " critters." << std::endl;
 //}
-void CritterWave::draw() const {
+void CritterWave::draw(int offsetX, int offsetY, int cellSize) const {
     int drawnCritters = 0;
     for (const auto& critter : critters) {
         if (critter.isActive()) {
-            critter.draw();
+            critter.draw(offsetX, offsetY, cellSize);
             drawnCritters++;
         }
     }

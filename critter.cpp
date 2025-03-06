@@ -145,19 +145,21 @@ bool Critter::reachedEnd() const {
 //    }
 //}
 
-void Critter::draw() const {
+void Critter::draw(int offsetX, int offsetY, int cellSize) const {
     if (hitPoints <= 0) return;
 
-    // Assume that the critter's position is in grid coordinates,
-    // and convert it to screen coordinates.
-    // For example, if cellSize and offset are known (you might pass them as parameters
-    // or have them globally accessible), do:
-    // Vector2 screenPos = { position.x * cellSize + offsetX, position.y * cellSize + offsetY };
-    // For now, we assume positions are already in screen coordinates.
-    DrawCircleV(position, 10, RED);
+    // Convert grid coordinates to screen coordinates
+    Vector2 screenPos = {
+        offsetX + position.x * cellSize + cellSize / 2,
+        offsetY + position.y * cellSize + cellSize / 2
+    };
 
+    // Draw the critter
+    DrawCircleV(screenPos, 10, RED);
+
+    // Draw health bar
     float healthBarWidth = 20 * ((float)hitPoints / (float)maxHitPoints);
-    DrawRectangle(position.x - 10, position.y - 15, healthBarWidth, 5, GREEN);
+    DrawRectangle(screenPos.x - 10, screenPos.y - 15, healthBarWidth, 5, GREEN);
 }
 
 

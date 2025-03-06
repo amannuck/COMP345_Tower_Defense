@@ -637,7 +637,7 @@ void Game::draw() const {
             if (currentWave) {
                 std::cout << "✅ Calling currentWave->draw(). Critters in wave: "
                           << currentWave->getCritters().size() << std::endl;
-                currentWave->draw();
+                currentWave->draw(offsetX, offsetY, cellSize);
             } else {
                 std::cout << "❌ currentWave is nullptr!" << std::endl;
             }
