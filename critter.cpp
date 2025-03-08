@@ -13,7 +13,7 @@ Critter::Critter(int level, float speed, float hp, int reward, int strength, con
 void Critter::move() {
     if (pathIndex < path.size() - 1) {
         Vector2 target = path[pathIndex + 1];
-        std::cout << "Moving critter to target: (" << target.x << ", " << target.y << ")" << std::endl;
+        //std::cout << "Moving critter to target: (" << target.x << ", " << target.y << ")" << std::endl;
 
         Vector2 direction = Vector2Subtract(target, position);
         direction = Vector2Normalize(direction);
@@ -22,10 +22,19 @@ void Critter::move() {
 
         if (Vector2Distance(position, target) < 1.0f) {
             pathIndex++;
-            std::cout << "Critter reached path point " << pathIndex << std::endl;
+            std::cout << "Critter reached path point " << pathIndex << " of " << path.size() - 1 << std::endl;
+            
+            // Check if we've reached the final path point
+            if (pathIndex >= path.size() - 1) {
+                std::cout << "🚀 Critter reached the exit!" << std::endl;
+                reachedEndFlag = true;
+                active = false;
+                notifyReachedEnd();
+            }
         }
-    } else {
+    } else if (!reachedEndFlag) {
         std::cout << "🚀 Critter reached the exit!" << std::endl;
+        reachedEndFlag = true;
         active = false;
         notifyReachedEnd();
     }
@@ -45,14 +54,14 @@ bool Critter::isDead() const {
 }
 
 bool Critter::reachedEnd() const {
-    return pathIndex >= path.size() - 1;
+    return reachedEndFlag || pathIndex >= path.size() - 1;
 }
 
 void Critter::draw() const {
     if (hitPoints <= 0) return;
 
     // Debug print
-    std::cout << "Drawing critter at position: (" << position.x << ", " << position.y << ")" << std::endl;
+    //std::cout << "Drawing critter at position: (" << position.x << ", " << position.y << ")" << std::endl;
 
     DrawCircleV(position, 10, RED);
 
@@ -94,9 +103,13 @@ void Critter::removeObserver(CritterObserver* observer) {
 }
 
 void Critter::notifyReachedEnd() {
+    std::cout << "Notifying " << observers.size() << " observers that critter reached end" << std::endl;
     for (auto observer : observers) {
         if (observer) {
+            std::cout << "Calling onCritterReachedEnd for observer" << std::endl;
             observer->onCritterReachedEnd(*this);
+        } else {
+            std::cerr << "ERROR: Null observer in the list!" << std::endl;
         }
     }
 }

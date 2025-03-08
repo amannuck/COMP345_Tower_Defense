@@ -573,18 +573,27 @@ void Game::draw() const {
     }
     for (const auto& notification : rewardNotifications) {
         float alpha = notification.timer > 1.0f ? 1.0f : notification.timer;
-        Color textColor = {255, 215, 0, static_cast<unsigned char>(255 * alpha)};
         
-        std::string rewardText = "+" + std::to_string(notification.amount);
+        // Use different colors for rewards and penalties
+        Color textColor;
+        std::string notificationText;
+        
+        if (notification.amount >= 0) {
+            textColor = {255, 215, 0, static_cast<unsigned char>(255 * alpha)}; // Gold for rewards
+            notificationText = "+" + std::to_string(notification.amount);
+        } else {
+            textColor = {255, 0, 0, static_cast<unsigned char>(255 * alpha)}; // Red for penalties
+            notificationText = std::to_string(notification.amount); // Negative sign is already included
+        }
         
         // Move the text upward as time passes
         float yOffset = (1.5f - notification.timer) * 30.0f;
         Vector2 textPos = {
-            notification.position.x - MeasureText(rewardText.c_str(), 20) / 2.0f,
+            notification.position.x - MeasureText(notificationText.c_str(), 20) / 2.0f,
             notification.position.y - 30.0f - yOffset
         };
         
-        DrawText(rewardText.c_str(), textPos.x, textPos.y, 20, textColor);
+        DrawText(notificationText.c_str(), textPos.x, textPos.y, 20, textColor);
     }    
 }
 
@@ -706,9 +715,14 @@ void Game::drawSideMenuDefault() const {
 }
 
 void Game::onCritterReachedEnd(const Critter& critter) {
-    // Handle when a critter reaches the end (e.g., reduce player health)
-    std::cout << "Critter reached the end. Player takes " << critter.getStrength() << " damage!" << std::endl;
-    // Here you would decrease player health
+    // Deduct currency based on critter's strength
+    int penalty = critter.getStrength() * 10; // Multiply by 10 to make the penalty more significant
+    towerManager->addCurrency(-penalty); // Using addCurrency with a negative value to deduct
+    
+    std::cout << "Critter reached the end. Player loses " << penalty << " gold!" << std::endl;
+    
+    // Add visual notification at the critter's position
+    addRewardNotification(critter.getPosition(), -penalty);
 }
 
 void Game::onCritterDefeated(const Critter& critter) {
