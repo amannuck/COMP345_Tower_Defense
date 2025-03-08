@@ -5,13 +5,14 @@
 
 #include "CritterWave.h"
 #include "TowerManager.h"
+#include "CritterObserver.h"
 
 enum class GameState {
     MAP_SELECTION,
     PLAYING
 };
 
-class Game {
+class Game : public CritterObserver { 
 private:
     std::unique_ptr<TowerManager> towerManager;
     GameState state;
@@ -56,9 +57,21 @@ private:
     };
     std::vector<Shot> activeShots;
 
+    struct RewardNotification {
+        Vector2 position;
+        int amount;
+        float timer;
+    };
+    std::vector<RewardNotification> rewardNotifications;    
+
 public:
     Game();
     ~Game();
     void update();
     void draw() const;
+    
+    // CritterObserver interface implementation
+    void onCritterReachedEnd(const Critter& critter) override;
+    void onCritterDefeated(const Critter& critter) override;
+    void addRewardNotification(const Vector2& position, int amount);
 };

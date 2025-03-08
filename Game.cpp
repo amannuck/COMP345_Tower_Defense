@@ -451,6 +451,14 @@ void Game::update() {
             break;
         }
     }
+    for (auto it = rewardNotifications.begin(); it != rewardNotifications.end();) {
+        it->timer -= GetFrameTime();
+        if (it->timer <= 0) {
+            it = rewardNotifications.erase(it);
+        } else {
+            ++it;
+        }
+    }    
 }
 
 
@@ -563,6 +571,21 @@ void Game::draw() const {
             }
             break;
     }
+    for (const auto& notification : rewardNotifications) {
+        float alpha = notification.timer > 1.0f ? 1.0f : notification.timer;
+        Color textColor = {255, 215, 0, static_cast<unsigned char>(255 * alpha)};
+        
+        std::string rewardText = "+" + std::to_string(notification.amount);
+        
+        // Move the text upward as time passes
+        float yOffset = (1.5f - notification.timer) * 30.0f;
+        Vector2 textPos = {
+            notification.position.x - MeasureText(rewardText.c_str(), 20) / 2.0f,
+            notification.position.y - 30.0f - yOffset
+        };
+        
+        DrawText(rewardText.c_str(), textPos.x, textPos.y, 20, textColor);
+    }    
 }
 
 void Game::drawSideMenu() const {
@@ -615,6 +638,12 @@ void Game::handleSideMenuButtonClick(Vector2 mousePos) {
             }
 
             critterWave = std::make_unique<CritterWave>(1, screenPath, cellSize, offsetX, offsetY);
+            
+            // Register the game as an observer for each critter
+            for (auto& critter : critterWave->getCritters()) {
+                critter.addObserver(this);
+            }
+            
             // Activate the first two critters
             for (int i = 0; i < 2; i++) {
                 if (i < critterWave->getCritters().size()) {
@@ -676,4 +705,26 @@ void Game::drawSideMenuDefault() const {
     DrawText(towersText.c_str(), menuRect.x + 10, 180, 16, BLACK);
 }
 
+void Game::onCritterReachedEnd(const Critter& critter) {
+    // Handle when a critter reaches the end (e.g., reduce player health)
+    std::cout << "Critter reached the end. Player takes " << critter.getStrength() << " damage!" << std::endl;
+    // Here you would decrease player health
+}
 
+void Game::onCritterDefeated(const Critter& critter) {
+    // Reward the player when a critter is defeated
+    int reward = critter.getReward();
+    towerManager->addCurrency(reward);
+    std::cout << "Critter defeated! Player receives " << reward << " gold!" << std::endl;
+    
+    // Add visual notification at the critter's position
+    addRewardNotification(critter.getPosition(), reward);
+}
+
+void Game::addRewardNotification(const Vector2& position, int amount) {
+    RewardNotification notification;
+    notification.position = position;
+    notification.amount = amount;
+    notification.timer = 1.5f; // Display for 1.5 seconds
+    rewardNotifications.push_back(notification);
+}
