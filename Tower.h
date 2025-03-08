@@ -3,6 +3,8 @@
 #include <string>
 #include <memory>
 
+#include "Critter.h"
+
 class Tower {
 protected:
     int level;
@@ -22,6 +24,7 @@ public:
     virtual ~Tower();
 
     virtual void upgrade();
+    void attackCritters(std::vector<Critter>& critters);
     virtual int getRefundValue() const;
     virtual void draw() const;
     

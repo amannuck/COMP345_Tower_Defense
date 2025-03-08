@@ -5,6 +5,8 @@
 #include "Tower.h"
 #include <cmath>
 
+#include "raymath.h"
+
 Tower::Tower(float range, float power, float fireRate, int buyCost, int upgradeCost,
              const std::string& name, const Color& color)
     : level(1), range(range), power(power), fireRate(fireRate), lastShotTime(0),
@@ -27,6 +29,23 @@ int Tower::getRefundValue() const {
     return static_cast<int>(totalCost * refundRatio);
 }
 
+void Tower::attackCritters(std::vector<Critter>& critters) {
+    if (!canShoot()) return;  // Only attack if the tower can shoot
+
+    for (auto& critter : critters) {
+        if (critter.isActive() && !critter.isDead()) {
+            // Check if the critter is within range
+            float distance = Vector2Distance(position, critter.getPosition());
+            if (distance <= range) {
+                // Attack the critter
+                critter.takeDamage(power);
+                resetShotTimer();  // Reset the shot timer after attacking
+                break;  // Attack only one critter per shot
+            }
+        }
+    }
+}
+
 void Tower::draw() const {
     // Draw tower
     DrawCircle(position.x, position.y, 15, color);
@@ -34,6 +53,8 @@ void Tower::draw() const {
     // Draw level indicator
     std::string levelText = "Lvl " + std::to_string(level);
     DrawText(levelText.c_str(), position.x - 10, position.y - 25, 10, BLACK);
+    
+
 }
 
 bool Tower::canShoot() const {

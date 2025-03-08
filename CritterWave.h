@@ -16,6 +16,7 @@ public:
     ~CritterWave() = default;
 
     void update();
+    void removeDeadCritters();
     void update(float deltaTime);
     void draw() const;
     bool allCrittersDefeated() const;

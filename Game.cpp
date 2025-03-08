@@ -452,43 +452,20 @@ void Game::update() {
         }
     }
 }
+
+
 void Game::updateTowers() {
     for (const auto& tower : towerManager->getTowers()) {
-        if (tower->canShoot()) {
-            // Create shots in 4 directions
-            Vector2 start = tower->getPosition();
-            float range = tower->getRange();
-            Color shotColor = tower->getName() == "Basic Tower" ? RED :
-                            tower->getName() == "Area Tower" ? BLUE : YELLOW;
-
-            std::vector<Vector2> directions = {
-                {1, 0}, {-1, 0}, {0, 1}, {0, -1}
-            };
-
-            for (const auto& dir : directions) {
-                Vector2 end = {
-                    start.x + dir.x * range,
-                    start.y + dir.y * range
-                };
-
-                activeShots.push_back({start, end, 0.2f, shotColor});  // 0.2s shot duration
-            }
-
-            tower->resetShotTimer();
+        if (critterWave && !critterWave->getCritters().empty()) {
+            tower->attackCritters(critterWave->getCritters());
         }
     }
 
-    // Update and remove expired shots
-    for (auto it = activeShots.begin(); it != activeShots.end();) {
-        it->timer -= GetFrameTime();
-        if (it->timer <= 0) {
-            it = activeShots.erase(it);
-        } else {
-            ++it;
-        }
+    // Remove dead critters
+    if (critterWave) {
+        critterWave->removeDeadCritters();
     }
 }
-
 void Game::drawTowerShots() const {
     for (const auto& shot : activeShots) {
         Color shotColor = shot.color;

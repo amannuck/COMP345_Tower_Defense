@@ -41,6 +41,7 @@ CritterWave::CritterWave(int waveLevel, const std::vector<Vector2>& path, int ce
 
         // Use the screen coordinates directly
         Critter critter(waveLevel, speed, hp, reward, strength, path);
+
         critter.setPosition(path.front());  // Start at the first path point
         critters.push_back(critter);
 
@@ -58,6 +59,13 @@ void CritterWave::update() {
     update(GetFrameTime());
 }
 
+void CritterWave::removeDeadCritters() {
+    critters.erase(
+        std::remove_if(critters.begin(), critters.end(),
+            [](Critter& critter) { return critter.isDead(); }),
+        critters.end()
+    );
+}
 
 void CritterWave::update(float deltaTime) {
     // Spawn new critters based on timer

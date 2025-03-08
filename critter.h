@@ -31,9 +31,11 @@ public:
     bool isActive() const { return active; }
 
     void setPosition(const Vector2& newPos) { position = newPos; }
+    const Vector2 getPosition() const { return position; }
     void setActive(bool state) { active = state; }
     int getReward() const { return reward; }
     int getStrength() const { return strength; }
+    float getHitPoints() const { return hitPoints; }
 
     // Observer management
     void addObserver(CritterObserver* observer);
