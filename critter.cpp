@@ -3,35 +3,34 @@
 #include <iostream>
 #include <algorithm>  // For std::remove and std::find
 
+#include "raymath.h"
+
 Critter::Critter(int level, float speed, float hp, int reward, int strength, const std::vector<Vector2>& path)
     : level(level), speed(speed), hitPoints(hp), maxHitPoints(hp), reward(reward), strength(strength),
       position(path.front()), path(path), pathIndex(0), active(false) {}
 
+
 void Critter::move() {
-    if (!active) return;
-
     if (pathIndex < path.size() - 1) {
-        Vector2 nextPosition = path[pathIndex + 1];
+        Vector2 target = path[pathIndex + 1];
+        std::cout << "Moving critter to target: (" << target.x << ", " << target.y << ")" << std::endl;
 
-        float dx = nextPosition.x - position.x;
-        float dy = nextPosition.y - position.y;
-        float distance = sqrt(dx * dx + dy * dy);
+        Vector2 direction = Vector2Subtract(target, position);
+        direction = Vector2Normalize(direction);
 
-        if (distance < speed) {
+        position = Vector2Add(position, Vector2Scale(direction, speed * GetFrameTime()));
+
+        if (Vector2Distance(position, target) < 1.0f) {
             pathIndex++;
-            position = nextPosition;
-        } else {
-            position.x += (dx / distance) * speed;
-            position.y += (dy / distance) * speed;
+            std::cout << "Critter reached path point " << pathIndex << std::endl;
         }
-
-        std::cout << "🐜 Critter moving to " << position.x << ", " << position.y << std::endl;
     } else {
-        reachedEndFlag = true;
-        notifyReachedEnd();  // Notify observers that the critter reached the end
-        std::cout << "⚠️ Critter reached the exit!" << std::endl;
+        std::cout << "🚀 Critter reached the exit!" << std::endl;
+        active = false;
+        notifyReachedEnd();
     }
 }
+
 
 void Critter::takeDamage(float damage) {
     hitPoints -= damage;
@@ -39,6 +38,7 @@ void Critter::takeDamage(float damage) {
         notifyDefeated();  // Notify observers that the critter is defeated
     }
 }
+
 
 bool Critter::isDead() const {
     return hitPoints <= 0;
@@ -50,6 +50,9 @@ bool Critter::reachedEnd() const {
 
 void Critter::draw() const {
     if (hitPoints <= 0) return;
+
+    // Debug print
+    std::cout << "Drawing critter at position: (" << position.x << ", " << position.y << ")" << std::endl;
 
     DrawCircleV(position, 10, RED);
 

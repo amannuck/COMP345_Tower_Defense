@@ -2,6 +2,8 @@
 #include "Map.h"
 #include <memory>
 #include <vector>
+
+#include "CritterWave.h"
 #include "TowerManager.h"
 
 enum class GameState {
@@ -17,6 +19,9 @@ private:
     std::vector<std::pair<int, int>> mapSizes;
     int selectedSize;
 
+    std::unique_ptr<CritterWave> critterWave;
+
+
     void drawMapSelection() const;
     void handleMapSelection();
     void initializeMap();
@@ -31,6 +36,10 @@ private:
 
     // New methods for permanent side menu
     void drawSideMenu() const;
+
+    void handleSideMenuButtonClick(Vector2 mousePos);
+
+    void drawSideMenuButton() const;
     void drawSideMenuDefault() const;
     void drawTowerInfoInSideMenu() const;
 

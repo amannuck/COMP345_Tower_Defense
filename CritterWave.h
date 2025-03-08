@@ -12,6 +12,7 @@ private:
 
 public:
     CritterWave(int waveLevel, const std::vector<Vector2>& path);
+    CritterWave(int waveLevel, const std::vector<Vector2>& path, int cellSize, int offsetX, int offsetY);
     ~CritterWave() = default;
 
     void update();

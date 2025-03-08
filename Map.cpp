@@ -15,12 +15,13 @@ Map::Map(int w, int h) : width(w), height(h) {
 void Map::generateRandomMap() {
     srand(time(0));
 
-    // Reset map to all scenery
+    // Reset map to all scenery and clear the path
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             grid[y][x] = CellType::SCENERY;
         }
     }
+    path.clear();  // Clear the existing path
 
     // Set entry point on left side
     int entryY = rand() % height;
@@ -36,28 +37,41 @@ void Map::generateRandomMap() {
     int currentX = 0;  // Start at entry point
     int currentY = entryY;
 
+    // Add entry point to path
+    path.push_back({static_cast<float>(currentX), static_cast<float>(currentY)});
+
     while (currentX != width - 1 || currentY != exitY) {
         grid[currentY][currentX] = CellType::PATH;
 
         // Decide movement direction based on current position relative to exit
+        int nextX = currentX;
+        int nextY = currentY;
+
         if (currentX == width - 1) {
             // If at rightmost column, only move vertically towards exit
-            currentY += (exitY > currentY) ? 1 : -1;
+            nextY += (exitY > currentY) ? 1 : -1;
         } else if (currentY == exitY) {
             // If at same Y as exit, move horizontally
-            currentX++;
+            nextX++;
         } else {
             // Randomly choose horizontal or vertical movement
             int direction = rand() % 2;
 
             if (direction == 0) {
                 // Move horizontally
-                currentX++;
+                nextX++;
             } else {
                 // Move vertically towards exit
-                currentY += (exitY > currentY) ? 1 : -1;
+                nextY += (exitY > currentY) ? 1 : -1;
             }
         }
+
+        // Update current position
+        currentX = nextX;
+        currentY = nextY;
+
+        // Add this position to the path
+        path.push_back({static_cast<float>(currentX), static_cast<float>(currentY)});
     }
 
     // Ensure the exit cell is marked as PATH before setting it as EXIT
@@ -152,6 +166,7 @@ void Map::draw(int offsetX, int offsetY, int cellSize) const {
         }
     }
 }
+
 void Map::setCellType(int x, int y, CellType type) {
     if (isValidCoordinate(x, y)) {
         grid[y][x] = type;

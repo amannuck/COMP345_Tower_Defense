@@ -1,6 +1,9 @@
 // Game.cpp
 #include "Game.h"
+
+#include <iostream>
 #include <memory>
+#include <ostream>
 
 Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSize(0) {
     mapSizes = {
@@ -9,6 +12,9 @@ Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSiz
         {16, 16},
     };
     towerManager = std::make_unique<TowerManager>(1000);
+
+    // Don't initialize critterWave here, wait until we have a path
+    critterWave = nullptr;  // Initialize to nullptr instead of empty path
 }
 
 Game::~Game() {
@@ -384,7 +390,7 @@ void Game::update() {
     switch (state) {
         case GameState::MAP_SELECTION:
             handleMapSelection();
-        break;
+            break;
 
         case GameState::PLAYING: {
             Vector2 mousePos = GetMousePosition();
@@ -424,10 +430,11 @@ void Game::update() {
                         }
                     }
                     processed = true;
-                } else if (!processed){
+                } else if (!processed) {
                     // If no tower type selected, check if we're selecting a tower
                     handleTowerSelection(mousePos);
                 }
+                handleSideMenuButtonClick(mousePos);
             }
 
             if (IsMouseButtonPressed(MOUSE_RIGHT_BUTTON)) {
@@ -435,13 +442,16 @@ void Game::update() {
                 selectedTower = nullptr;  // Right-click also deselects tower
             }
 
+            // Update critters only if the wave exists and has a valid path
+            if (critterWave && !critterWave->getCritters().empty()) {
+                critterWave->update(GetFrameTime());
+            }
+
             updateTowers();
             break;
         }
     }
 }
-
-
 void Game::updateTowers() {
     for (const auto& tower : towerManager->getTowers()) {
         if (tower->canShoot()) {
@@ -527,49 +537,54 @@ void Game::draw() const {
     switch (state) {
         case GameState::MAP_SELECTION:
             drawMapSelection();
-        break;
+            break;
 
         case GameState::PLAYING:
-            // Always account for the side menu width in calculations
-                int gameAreaHeight = GetScreenHeight() - towerMenuHeight;
-        int gameAreaWidth = GetScreenWidth() - sideMenuWidth; // Always subtract side menu width
+            int gameAreaHeight = GetScreenHeight() - towerMenuHeight;
+            int gameAreaWidth = GetScreenWidth() - sideMenuWidth; // Always subtract side menu width
 
-        int cellSize = std::min(gameAreaWidth / (currentMap->getWidth() + 2),
-                            gameAreaHeight / (currentMap->getHeight() + 2));
-        int offsetX = (gameAreaWidth - (currentMap->getWidth() * cellSize)) / 2;
-        int offsetY = (gameAreaHeight - (currentMap->getHeight() * cellSize)) / 2;
+            int cellSize = std::min(gameAreaWidth / (currentMap->getWidth() + 2),
+                                gameAreaHeight / (currentMap->getHeight() + 2));
+            int offsetX = (gameAreaWidth - (currentMap->getWidth() * cellSize)) / 2;
+            int offsetY = (gameAreaHeight - (currentMap->getHeight() * cellSize)) / 2;
 
-        currentMap->draw(offsetX, offsetY, cellSize);
+            currentMap->draw(offsetX, offsetY, cellSize);
 
-        // Draw all placed towers (positions will be consistent now)
-        for (const auto& tower : towerManager->getTowers()) {
-            // Add a highlight effect for the selected tower
-            if (selectedTower == tower.get()) {
-                DrawCircleLines(tower->getPosition().x, tower->getPosition().y,
-                               20, WHITE);  // Highlight ring
+            // Draw all placed towers (positions will be consistent now)
+            for (const auto& tower : towerManager->getTowers()) {
+                // Add a highlight effect for the selected tower
+                if (selectedTower == tower.get()) {
+                    DrawCircleLines(tower->getPosition().x, tower->getPosition().y,
+                                   20, WHITE);  // Highlight ring
+                }
+                tower->draw();
             }
-            tower->draw();
+
+            // Draw critters
+        if (critterWave && !critterWave->getCritters().empty()) {
+            critterWave->draw();
         }
 
-        // Always draw the side menu background
-        drawSideMenu();
+            // Always draw the side menu background
+            drawSideMenu();
+            drawSideMenuButton();
 
-        // Only draw tower info if a tower is selected
-        if (selectedTower) {
-            drawTowerInfoInSideMenu();
-        } else {
-            drawSideMenuDefault(); // Draw default content when no tower is selected
-        }
+            // Only draw tower info if a tower is selected
+            if (selectedTower) {
+                drawTowerInfoInSideMenu();
+            } else {
+                drawSideMenuDefault(); // Draw default content when no tower is selected
+            }
 
-        drawTowerShots();
-        drawTowerMenu();
+            drawTowerShots();
+            drawTowerMenu();
 
-        // Draw selection instruction if tower type is selected
-        if (!selectedTowerType.empty()) {
-            DrawText("Click to place tower (Right click to cancel)",
-                    (GetScreenWidth() - sideMenuWidth) / 2 - 100, 20, 20, BLACK);
-        }
-        break;
+            // Draw selection instruction if tower type is selected
+            if (!selectedTowerType.empty()) {
+                DrawText("Click to place tower (Right click to cancel)",
+                        (GetScreenWidth() - sideMenuWidth) / 2 - 100, 20, 20, BLACK);
+            }
+            break;
     }
 }
 
@@ -587,6 +602,81 @@ void Game::drawSideMenu() const {
 
     // Draw a title for the side menu
     DrawText("Tower Info", menuRect.x + 10, 20, 24, BLACK);
+}
+
+void Game::handleSideMenuButtonClick(Vector2 mousePos) {
+    Rectangle buttonRect = {
+        static_cast<float>(GetScreenWidth() - sideMenuWidth + 10),
+        static_cast<float>(GetScreenHeight() - towerMenuHeight - 60),
+        static_cast<float>(sideMenuWidth - 20),
+        50
+    };
+
+    if (CheckCollisionPointRec(mousePos, buttonRect)) {
+        // Ensure the map is initialized and has a path
+        if (currentMap && !currentMap->getPath().empty()) {
+            // Calculate cell size and offsets
+            int gameAreaHeight = GetScreenHeight() - towerMenuHeight;
+            int gameAreaWidth = GetScreenWidth() - sideMenuWidth;
+            int cellSize = std::min(gameAreaWidth / (currentMap->getWidth() + 2),
+                                gameAreaHeight / (currentMap->getHeight() + 2));
+            int offsetX = (gameAreaWidth - (currentMap->getWidth() * cellSize)) / 2;
+            int offsetY = (gameAreaHeight - (currentMap->getHeight() * cellSize)) / 2;
+
+            // Convert the path from grid coordinates to screen coordinates
+            std::vector<Vector2> screenPath;
+            for (const auto& point : currentMap->getPath()) {
+                Vector2 screenPoint = {
+                    offsetX + point.x * cellSize + cellSize / 2.0f,
+                    offsetY + point.y * cellSize + cellSize / 2.0f
+                };
+                screenPath.push_back(screenPoint);
+
+                // Debug print
+                std::cout << "Path point (grid): (" << point.x << ", " << point.y << ") -> (screen): ("
+                          << screenPoint.x << ", " << screenPoint.y << ")" << std::endl;
+            }
+
+            critterWave = std::make_unique<CritterWave>(1, screenPath, cellSize, offsetX, offsetY);
+            // Activate the first two critters
+            for (int i = 0; i < 2; i++) {
+                if (i < critterWave->getCritters().size()) {
+                    critterWave->getCritters()[i].activate();
+                }
+            }
+        } else {
+            std::cerr << "ERROR: No map or path available to spawn critters." << std::endl;
+        }
+    }
+}
+
+void Game::drawSideMenuButton() const {
+    // Define the button rectangle
+    Rectangle buttonRect = {
+        static_cast<float>(GetScreenWidth() - sideMenuWidth + 10),  // 10 pixels from the left edge of the side menu
+        static_cast<float>(GetScreenHeight() - towerMenuHeight - 60),  // 60 pixels from the bottom of the side menu
+        static_cast<float>(sideMenuWidth - 20),  // Button width (side menu width minus 20 pixels for padding)
+        50  // Button height
+    };
+
+    // Check if the mouse is hovering over the button
+    bool isHovered = CheckCollisionPointRec(GetMousePosition(), buttonRect);
+
+    // Draw the button background
+    Color buttonColor = isHovered ? SKYBLUE : BLUE;
+    DrawRectangleRec(buttonRect, buttonColor);
+
+    // Draw the button border
+    DrawRectangleLinesEx(buttonRect, 2, isHovered ? WHITE : BLACK);
+
+    // Draw the button text
+    const char* buttonText = "Next Wave";
+    int fontSize = 20;
+    float textWidth = MeasureText(buttonText, fontSize);
+    DrawText(buttonText,
+             buttonRect.x + (buttonRect.width - textWidth) / 2,
+             buttonRect.y + (buttonRect.height - fontSize) / 2,
+             fontSize, WHITE);
 }
 
 void Game::drawSideMenuDefault() const {
@@ -608,4 +698,5 @@ void Game::drawSideMenuDefault() const {
     std::string towersText = "Towers: " + std::to_string(towerManager->getTowers().size());
     DrawText(towersText.c_str(), menuRect.x + 10, 180, 16, BLACK);
 }
+
 

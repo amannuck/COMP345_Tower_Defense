@@ -20,6 +20,8 @@ private:
 public:
     Critter(int level, float speed, float hp, int reward, int strength, const std::vector<Vector2>& path);
 
+    void setPosition(const Vector2 &gridPos, int cellSize, int offsetX, int offsetY);
+
     void move();
     void takeDamage(float damage);
     bool isDead() const;
@@ -28,7 +30,7 @@ public:
     void activate();
     bool isActive() const { return active; }
 
-    void setPosition(Vector2 newPos) { position = newPos; }
+    void setPosition(const Vector2& newPos) { position = newPos; }
     void setActive(bool state) { active = state; }
     int getReward() const { return reward; }
     int getStrength() const { return strength; }

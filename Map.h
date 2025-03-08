@@ -24,6 +24,7 @@ private:
     Vector2 entryPoint;
     Vector2 exitPoint;
     int CELL_SIZE;  // Dynamic cell size based on map dimensions
+    std::vector<Vector2> path;  // Added path variable to store path cells
 
     bool isValidCoordinate(int x, int y) const {
         return x >= 0 && x < width && y >= 0 && y < height;
@@ -43,4 +44,5 @@ public:
     int getHeight() const { return height; }
     bool validateMap() const;
     void setCellType(int x, int y, CellType type);
+    const std::vector<Vector2>& getPath() const { return path; }
 };

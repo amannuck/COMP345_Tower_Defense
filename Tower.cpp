@@ -44,6 +44,8 @@ void Tower::resetShotTimer() {
     lastShotTime = GetTime();
 }
 
+
+
 BasicTower::BasicTower()
     : Tower(150.0f, 10.0f, 1.0f, 100, 50, "Basic Tower", RED) {}
 

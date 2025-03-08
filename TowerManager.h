@@ -20,6 +20,7 @@ public:
 
     const std::vector<std::unique_ptr<Tower>>& getTowers() const { return towers; }
     int getCurrency() const { return playerCurrency; }
+    void addCurrency(int thiscurr) { playerCurrency = thiscurr + playerCurrency; }
 
     // Factory methods
     std::unique_ptr<Tower> createTower(const std::string& towerType) const;
