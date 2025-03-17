@@ -12,7 +12,7 @@ enum class GameState {
     PLAYING
 };
 
-class Game : public CritterObserver { 
+class Game : public CritterObserver {
 private:
     std::unique_ptr<TowerManager> towerManager;
     GameState state;
@@ -62,7 +62,7 @@ private:
         int amount;
         float timer;
     };
-    std::vector<RewardNotification> rewardNotifications;    
+    std::vector<RewardNotification> rewardNotifications;
 
 public:
     Game();

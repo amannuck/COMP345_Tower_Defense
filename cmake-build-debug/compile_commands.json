@@ -1,55 +1,55 @@
 [
 {
   "directory": "C:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug",
-  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\main.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\main.cpp",
+  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\main.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\main.cpp",
   "file": "C:\\Users\\amann\\CLionProjects\\defenseGUI\\main.cpp",
   "output": "CMakeFiles\\defenseGUI.dir\\main.cpp.obj"
 },
 {
   "directory": "C:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug",
-  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\Map.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\Map.cpp",
+  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\Map.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\Map.cpp",
   "file": "C:\\Users\\amann\\CLionProjects\\defenseGUI\\Map.cpp",
   "output": "CMakeFiles\\defenseGUI.dir\\Map.cpp.obj"
 },
 {
   "directory": "C:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug",
-  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\MapEditor.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\MapEditor.cpp",
+  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\MapEditor.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\MapEditor.cpp",
   "file": "C:\\Users\\amann\\CLionProjects\\defenseGUI\\MapEditor.cpp",
   "output": "CMakeFiles\\defenseGUI.dir\\MapEditor.cpp.obj"
 },
 {
   "directory": "C:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug",
-  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\Game.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\Game.cpp",
+  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\Game.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\Game.cpp",
   "file": "C:\\Users\\amann\\CLionProjects\\defenseGUI\\Game.cpp",
   "output": "CMakeFiles\\defenseGUI.dir\\Game.cpp.obj"
 },
 {
   "directory": "C:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug",
-  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\Tower.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\Tower.cpp",
+  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\Tower.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\Tower.cpp",
   "file": "C:\\Users\\amann\\CLionProjects\\defenseGUI\\Tower.cpp",
   "output": "CMakeFiles\\defenseGUI.dir\\Tower.cpp.obj"
 },
 {
   "directory": "C:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug",
-  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\TowerManager.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\TowerManager.cpp",
+  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\TowerManager.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\TowerManager.cpp",
   "file": "C:\\Users\\amann\\CLionProjects\\defenseGUI\\TowerManager.cpp",
   "output": "CMakeFiles\\defenseGUI.dir\\TowerManager.cpp.obj"
 },
 {
   "directory": "C:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug",
-  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\MapObserver.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\MapObserver.cpp",
+  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\MapObserver.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\MapObserver.cpp",
   "file": "C:\\Users\\amann\\CLionProjects\\defenseGUI\\MapObserver.cpp",
   "output": "CMakeFiles\\defenseGUI.dir\\MapObserver.cpp.obj"
 },
 {
   "directory": "C:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug",
-  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\CritterWave.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\CritterWave.cpp",
+  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\CritterWave.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\CritterWave.cpp",
   "file": "C:\\Users\\amann\\CLionProjects\\defenseGUI\\CritterWave.cpp",
   "output": "CMakeFiles\\defenseGUI.dir\\CritterWave.cpp.obj"
 },
 {
   "directory": "C:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug",
-  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\critter.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\critter.cpp",
+  "command": "C:\\Users\\amann\\AppData\\Local\\JETBRA~1\\CLION2~1.1\\bin\\mingw\\bin\\G__~1.EXE -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include -g -std=gnu++17 -fdiagnostics-color=always -o CMakeFiles\\defenseGUI.dir\\critter.cpp.obj -c C:\\Users\\amann\\CLionProjects\\defenseGUI\\critter.cpp",
   "file": "C:\\Users\\amann\\CLionProjects\\defenseGUI\\critter.cpp",
   "output": "CMakeFiles\\defenseGUI.dir\\critter.cpp.obj"
 },

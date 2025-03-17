@@ -573,11 +573,11 @@ void Game::draw() const {
     }
     for (const auto& notification : rewardNotifications) {
         float alpha = notification.timer > 1.0f ? 1.0f : notification.timer;
-        
+
         // Use different colors for rewards and penalties
         Color textColor;
         std::string notificationText;
-        
+
         if (notification.amount >= 0) {
             textColor = {255, 215, 0, static_cast<unsigned char>(255 * alpha)}; // Gold for rewards
             notificationText = "+" + std::to_string(notification.amount);
@@ -585,7 +585,7 @@ void Game::draw() const {
             textColor = {255, 0, 0, static_cast<unsigned char>(255 * alpha)}; // Red for penalties
             notificationText = std::to_string(notification.amount); // Negative sign is already included
         }
-        
+
         // Move the text upward as time passes
         float yOffset = (1.5f - notification.timer) * 30.0f;
         Vector2 textPos = {
@@ -647,12 +647,12 @@ void Game::handleSideMenuButtonClick(Vector2 mousePos) {
             }
 
             critterWave = std::make_unique<CritterWave>(1, screenPath, cellSize, offsetX, offsetY);
-            
+
             // Register the game as an observer for each critter
             for (auto& critter : critterWave->getCritters()) {
                 critter.addObserver(this);
             }
-            
+
             // Activate the first two critters
             for (int i = 0; i < 2; i++) {
                 if (i < critterWave->getCritters().size()) {

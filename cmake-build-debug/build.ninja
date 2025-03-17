@@ -52,7 +52,7 @@ build cmake_object_order_depends_target_defenseGUI: phony || cmake_object_order_
 build CMakeFiles/defenseGUI.dir/main.cpp.obj: CXX_COMPILER__defenseGUI_unscanned_Debug C$:/Users/amann/CLionProjects/defenseGUI/main.cpp || cmake_object_order_depends_target_defenseGUI
   DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP
   DEP_FILE = CMakeFiles\defenseGUI.dir\main.cpp.obj.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include
   OBJECT_DIR = CMakeFiles\defenseGUI.dir
   OBJECT_FILE_DIR = CMakeFiles\defenseGUI.dir
@@ -60,7 +60,7 @@ build CMakeFiles/defenseGUI.dir/main.cpp.obj: CXX_COMPILER__defenseGUI_unscanned
 build CMakeFiles/defenseGUI.dir/Map.cpp.obj: CXX_COMPILER__defenseGUI_unscanned_Debug C$:/Users/amann/CLionProjects/defenseGUI/Map.cpp || cmake_object_order_depends_target_defenseGUI
   DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP
   DEP_FILE = CMakeFiles\defenseGUI.dir\Map.cpp.obj.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include
   OBJECT_DIR = CMakeFiles\defenseGUI.dir
   OBJECT_FILE_DIR = CMakeFiles\defenseGUI.dir
@@ -68,7 +68,7 @@ build CMakeFiles/defenseGUI.dir/Map.cpp.obj: CXX_COMPILER__defenseGUI_unscanned_
 build CMakeFiles/defenseGUI.dir/MapEditor.cpp.obj: CXX_COMPILER__defenseGUI_unscanned_Debug C$:/Users/amann/CLionProjects/defenseGUI/MapEditor.cpp || cmake_object_order_depends_target_defenseGUI
   DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP
   DEP_FILE = CMakeFiles\defenseGUI.dir\MapEditor.cpp.obj.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include
   OBJECT_DIR = CMakeFiles\defenseGUI.dir
   OBJECT_FILE_DIR = CMakeFiles\defenseGUI.dir
@@ -76,7 +76,7 @@ build CMakeFiles/defenseGUI.dir/MapEditor.cpp.obj: CXX_COMPILER__defenseGUI_unsc
 build CMakeFiles/defenseGUI.dir/Game.cpp.obj: CXX_COMPILER__defenseGUI_unscanned_Debug C$:/Users/amann/CLionProjects/defenseGUI/Game.cpp || cmake_object_order_depends_target_defenseGUI
   DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP
   DEP_FILE = CMakeFiles\defenseGUI.dir\Game.cpp.obj.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include
   OBJECT_DIR = CMakeFiles\defenseGUI.dir
   OBJECT_FILE_DIR = CMakeFiles\defenseGUI.dir
@@ -84,7 +84,7 @@ build CMakeFiles/defenseGUI.dir/Game.cpp.obj: CXX_COMPILER__defenseGUI_unscanned
 build CMakeFiles/defenseGUI.dir/Tower.cpp.obj: CXX_COMPILER__defenseGUI_unscanned_Debug C$:/Users/amann/CLionProjects/defenseGUI/Tower.cpp || cmake_object_order_depends_target_defenseGUI
   DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP
   DEP_FILE = CMakeFiles\defenseGUI.dir\Tower.cpp.obj.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include
   OBJECT_DIR = CMakeFiles\defenseGUI.dir
   OBJECT_FILE_DIR = CMakeFiles\defenseGUI.dir
@@ -92,7 +92,7 @@ build CMakeFiles/defenseGUI.dir/Tower.cpp.obj: CXX_COMPILER__defenseGUI_unscanne
 build CMakeFiles/defenseGUI.dir/TowerManager.cpp.obj: CXX_COMPILER__defenseGUI_unscanned_Debug C$:/Users/amann/CLionProjects/defenseGUI/TowerManager.cpp || cmake_object_order_depends_target_defenseGUI
   DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP
   DEP_FILE = CMakeFiles\defenseGUI.dir\TowerManager.cpp.obj.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include
   OBJECT_DIR = CMakeFiles\defenseGUI.dir
   OBJECT_FILE_DIR = CMakeFiles\defenseGUI.dir
@@ -100,7 +100,7 @@ build CMakeFiles/defenseGUI.dir/TowerManager.cpp.obj: CXX_COMPILER__defenseGUI_u
 build CMakeFiles/defenseGUI.dir/MapObserver.cpp.obj: CXX_COMPILER__defenseGUI_unscanned_Debug C$:/Users/amann/CLionProjects/defenseGUI/MapObserver.cpp || cmake_object_order_depends_target_defenseGUI
   DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP
   DEP_FILE = CMakeFiles\defenseGUI.dir\MapObserver.cpp.obj.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include
   OBJECT_DIR = CMakeFiles\defenseGUI.dir
   OBJECT_FILE_DIR = CMakeFiles\defenseGUI.dir
@@ -108,7 +108,7 @@ build CMakeFiles/defenseGUI.dir/MapObserver.cpp.obj: CXX_COMPILER__defenseGUI_un
 build CMakeFiles/defenseGUI.dir/CritterWave.cpp.obj: CXX_COMPILER__defenseGUI_unscanned_Debug C$:/Users/amann/CLionProjects/defenseGUI/CritterWave.cpp || cmake_object_order_depends_target_defenseGUI
   DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP
   DEP_FILE = CMakeFiles\defenseGUI.dir\CritterWave.cpp.obj.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include
   OBJECT_DIR = CMakeFiles\defenseGUI.dir
   OBJECT_FILE_DIR = CMakeFiles\defenseGUI.dir
@@ -116,7 +116,7 @@ build CMakeFiles/defenseGUI.dir/CritterWave.cpp.obj: CXX_COMPILER__defenseGUI_un
 build CMakeFiles/defenseGUI.dir/critter.cpp.obj: CXX_COMPILER__defenseGUI_unscanned_Debug C$:/Users/amann/CLionProjects/defenseGUI/critter.cpp || cmake_object_order_depends_target_defenseGUI
   DEFINES = -DGRAPHICS_API_OPENGL_33 -DPLATFORM_DESKTOP
   DEP_FILE = CMakeFiles\defenseGUI.dir\critter.cpp.obj.d
-  FLAGS = -g -fdiagnostics-color=always
+  FLAGS = -g -std=gnu++17 -fdiagnostics-color=always
   INCLUDES = -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src -IC:/Users/amann/CLionProjects/defenseGUI/cmake-build-debug/_deps/raylib-src/src/external/glfw/include
   OBJECT_DIR = CMakeFiles\defenseGUI.dir
   OBJECT_FILE_DIR = CMakeFiles\defenseGUI.dir
