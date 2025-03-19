@@ -20,6 +20,9 @@ private:
     Map* currentMap;
     std::vector<std::pair<int, int>> mapSizes;
     int selectedSize;
+    std::string widthInput;  // Stores the width input as a string
+    std::string heightInput; // Stores the height input as a string
+    bool isEditingWidth;
 
     std::unique_ptr<CritterWave> critterWave;
     std::unique_ptr<MapEditor> mapEditor;  // MapEditor instance

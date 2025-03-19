@@ -5,17 +5,17 @@
 #include <memory>
 #include <ostream>
 
-Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSize(0) {
+Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSize(0), isEditingWidth(true) {
+    widthInput = "";
+    heightInput = "";
     mapSizes = {
         {12, 12},
         {14, 14},
         {16, 16},
     };
     towerManager = std::make_unique<TowerManager>(1000);
-
-    // Don't initialize critterWave here, wait until we have a path
-    critterWave = nullptr;  // Initialize to nullptr instead of empty path
-    mapEditor = nullptr;  // Initialize mapEditor to nullptr
+    critterWave = nullptr;
+    mapEditor = nullptr;
 }
 
 Game::~Game() {
@@ -367,22 +367,54 @@ void Game::handleTowerMenuClick(Vector2 mousePos) {
 }
 
 
-// Game.cpp
 void Game::handleMapSelection() {
     if (state == GameState::MAP_SELECTION) {
-        // Handle keyboard input for size selection
-        if (IsKeyPressed(KEY_UP)) {
-            selectedSize = (selectedSize - 1 + mapSizes.size()) % mapSizes.size();
+        // Handle keyboard input for width and height
+        int key = GetCharPressed(); // Get the character pressed by the user
+        while (key > 0) {
+            // Only allow numeric input (0-9)
+            if (key >= '0' && key <= '9') {
+                if (isEditingWidth) {
+                    widthInput += static_cast<char>(key); // Append to width input
+                } else {
+                    heightInput += static_cast<char>(key); // Append to height input
+                }
+            }
+            key = GetCharPressed(); // Get the next character
         }
-        if (IsKeyPressed(KEY_DOWN)) {
-            selectedSize = (selectedSize + 1) % mapSizes.size();
+
+        // Handle backspace to delete the last character
+        if (IsKeyPressed(KEY_BACKSPACE)) {
+            if (isEditingWidth && !widthInput.empty()) {
+                widthInput.pop_back(); // Remove the last character from width input
+            } else if (!isEditingWidth && !heightInput.empty()) {
+                heightInput.pop_back(); // Remove the last character from height input
+            }
         }
+
+        // Handle TAB to switch between width and height input
+        if (IsKeyPressed(KEY_TAB)) {
+            isEditingWidth = !isEditingWidth; // Toggle between width and height input
+        }
+
+        // Handle ENTER to confirm dimensions
         if (IsKeyPressed(KEY_ENTER)) {
-            // Initialize the map with the selected size
-            auto [width, height] = mapSizes[selectedSize];
-            currentMap = new Map(width, height);
-            mapEditor = std::make_unique<MapEditor>(width, height);
-            state = GameState::MAP_EDITING;
+            // Convert width and height inputs to integers
+            int width = widthInput.empty() ? 0 : std::stoi(widthInput);
+            int height = heightInput.empty() ? 0 : std::stoi(heightInput);
+
+            // Validate dimensions (ensure they are greater than 0)
+            if (width > 0 && height > 0) {
+                currentMap = new Map(width, height);
+                mapEditor = std::make_unique<MapEditor>(width, height);
+                state = GameState::MAP_EDITING;
+
+                // Reset input fields for next use
+                widthInput.clear();
+                heightInput.clear();
+            } else {
+                std::cout << "Invalid dimensions! Width and height must be greater than 0." << std::endl;
+            }
         }
     } else if (state == GameState::MAP_EDITING) {
         // Update the map editor
@@ -392,14 +424,11 @@ void Game::handleMapSelection() {
         if (IsKeyPressed(KEY_ENTER)) {
             if (mapEditor->getMap()->validateMap()) {
                 currentMap = new Map(*mapEditor->getMap());
-
-                // Calculate the path after the map is validated
                 currentMap->calculatePath();
-
                 state = GameState::PLAYING;
                 mapEditor = nullptr;
             } else {
-                std::cout << "Map is invalid! Please ensure there is a valid path from entry to exit." << std::endl;
+                std::cout << "Map is invalid! Please fix the errors." << std::endl;
             }
         }
     }
@@ -503,7 +532,7 @@ void Game::drawTowerShots() const {
 }
 
 void Game::drawMapSelection() const {
-    const char* title = "Select Map Size";
+    const char* title = "Enter Map Dimensions";
     int fontSize = 30;
     int spacing = 50;
 
@@ -514,22 +543,24 @@ void Game::drawMapSelection() const {
     };
     DrawText(title, titlePos.x, titlePos.y, fontSize, BLACK);
 
-    // Draw size options
-    for (int i = 0; i < mapSizes.size(); i++) {
-        auto [width, height] = mapSizes[i];
-        std::string sizeText = std::to_string(width) + "x" + std::to_string(height);
+    // Draw width input field
+    std::string widthPrompt = "Width: " + widthInput;
+    Vector2 widthPos = {
+        (GetScreenWidth() - MeasureText(widthPrompt.c_str(), fontSize)) / 2.0f,
+        titlePos.y + spacing
+    };
+    DrawText(widthPrompt.c_str(), widthPos.x, widthPos.y, fontSize, isEditingWidth ? RED : BLACK);
 
-        Color textColor = (i == selectedSize) ? RED : BLACK;
-        Vector2 textPos = {
-            (GetScreenWidth() - MeasureText(sizeText.c_str(), fontSize)) / 2.0f,
-            titlePos.y + spacing * (i + 2)
-        };
-
-        DrawText(sizeText.c_str(), textPos.x, textPos.y, fontSize, textColor);
-    }
+    // Draw height input field
+    std::string heightPrompt = "Height: " + heightInput;
+    Vector2 heightPos = {
+        (GetScreenWidth() - MeasureText(heightPrompt.c_str(), fontSize)) / 2.0f,
+        widthPos.y + spacing
+    };
+    DrawText(heightPrompt.c_str(), heightPos.x, heightPos.y, fontSize, !isEditingWidth ? RED : BLACK);
 
     // Draw instructions
-    const char* instructions = "Use UP/DOWN arrows to select, ENTER to confirm";
+    const char* instructions = "Type width/height, press TAB to switch, ENTER to confirm";
     int instructionSize = 20;
     Vector2 instructionsPos = {
         (GetScreenWidth() - MeasureText(instructions, instructionSize)) / 2.0f,
