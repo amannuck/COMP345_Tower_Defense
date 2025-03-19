@@ -35,12 +35,18 @@ void MapEditor::update() {
     int gridX = (mousePos.x - offsetX) / cellSize;
     int gridY = (mousePos.y - offsetY) / cellSize;
 
+    // Ensure grid coordinates are within bounds
+    if (gridX < 0) gridX = 0;
+    if (gridX >= currentMap->getWidth()) gridX = currentMap->getWidth() - 1;
+    if (gridY < 0) gridY = 0;
+    if (gridY >= currentMap->getHeight()) gridY = currentMap->getHeight() - 1;
+
     // Place cells while dragging
     if (isDragging || IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
         if (gridX >= 0 && gridX < currentMap->getWidth() &&
             gridY >= 0 && gridY < currentMap->getHeight()) {
             currentMap->setCellType(gridX, gridY, currentTool);
-        }
+            }
     }
 }
 

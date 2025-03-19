@@ -1,8 +1,11 @@
 // Map.cpp
 #include "Map.h"
 
+#include <iostream>
+#include <ostream>
+
 Map::Map(int w, int h) : width(w), height(h) {
-    grid.resize(height, std::vector<CellType>(width, CellType::SCENERY));
+    grid.resize(height, std::vector<CellType>(width, CellType::SCENERY));  // Initialize all cells as SCENERY
     entryPoint = {-1, -1};
     exitPoint = {-1, -1};
 
@@ -12,76 +15,56 @@ Map::Map(int w, int h) : width(w), height(h) {
     CELL_SIZE = std::min(screenWidth / (width + 2), screenHeight / (height + 2));
 }
 
-void Map::generateRandomMap() {
-    srand(time(0));
+void Map::calculatePath() {
+    std::vector<std::vector<bool>> visited(height, std::vector<bool>(width, false));
+    std::queue<Vector2> queue;
+    std::vector<std::vector<Vector2>> parent(height, std::vector<Vector2>(width, {-1, -1}));
 
-    // Reset map to all scenery and clear the path
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            grid[y][x] = CellType::SCENERY;
+    queue.push(entryPoint);
+    visited[entryPoint.y][entryPoint.x] = true;
+
+    const int dx[] = {-1, 1, 0, 0};
+    const int dy[] = {0, 0, -1, 1};
+
+    bool pathFound = false;
+
+    while (!queue.empty()) {
+        Vector2 current = queue.front();
+        queue.pop();
+
+        // If we reach the exit point, the path is found
+        if (current.x == exitPoint.x && current.y == exitPoint.y) {
+            pathFound = true;
+            break;
         }
-    }
-    path.clear();  // Clear the existing path
 
-    // Set entry point on left side
-    int entryY = rand() % height;
-    entryPoint = {0, static_cast<float>(entryY)};
-    grid[entryY][0] = CellType::ENTRY;
+        // Check all four directions
+        for (int i = 0; i < 4; i++) {
+            int newX = current.x + dx[i];
+            int newY = current.y + dy[i];
 
-    // Set exit point on right side
-    int exitY = rand() % height;
-    exitPoint = {static_cast<float>(width - 1), static_cast<float>(exitY)};
-    grid[exitY][width - 1] = CellType::EXIT;
-
-    // Generate path from entry to exit using improved directional logic
-    int currentX = 0;  // Start at entry point
-    int currentY = entryY;
-
-    // Add entry point to path
-    path.push_back({static_cast<float>(currentX), static_cast<float>(currentY)});
-
-    while (currentX != width - 1 || currentY != exitY) {
-        grid[currentY][currentX] = CellType::PATH;
-
-        // Decide movement direction based on current position relative to exit
-        int nextX = currentX;
-        int nextY = currentY;
-
-        if (currentX == width - 1) {
-            // If at rightmost column, only move vertically towards exit
-            nextY += (exitY > currentY) ? 1 : -1;
-        } else if (currentY == exitY) {
-            // If at same Y as exit, move horizontally
-            nextX++;
-        } else {
-            // Randomly choose horizontal or vertical movement
-            int direction = rand() % 2;
-
-            if (direction == 0) {
-                // Move horizontally
-                nextX++;
-            } else {
-                // Move vertically towards exit
-                nextY += (exitY > currentY) ? 1 : -1;
+            if (isValidCoordinate(newX, newY) && !visited[newY][newX] &&
+                (grid[newY][newX] == CellType::PATH || grid[newY][newX] == CellType::EXIT)) {
+                queue.push({static_cast<float>(newX), static_cast<float>(newY)});
+                visited[newY][newX] = true;
+                parent[newY][newX] = current;
             }
         }
-
-        // Update current position
-        currentX = nextX;
-        currentY = nextY;
-
-        // Add this position to the path
-        path.push_back({static_cast<float>(currentX), static_cast<float>(currentY)});
     }
 
-    // Ensure the exit cell is marked as PATH before setting it as EXIT
-    grid[exitY][width - 1] = CellType::PATH;
-
-    // Reset entry and exit points with correct cell types
-    grid[entryY][0] = CellType::ENTRY;
-    grid[exitY][width - 1] = CellType::EXIT;
-
-    notifyObservers();
+    if (pathFound) {
+        // Reconstruct the path from exit to entry
+        path.clear();
+        Vector2 current = exitPoint;
+        while (current.x != entryPoint.x || current.y != entryPoint.y) {
+            path.push_back(current);
+            current = parent[current.y][current.x];
+        }
+        path.push_back(entryPoint);
+        std::reverse(path.begin(), path.end());
+    } else {
+        path.clear();
+    }
 }
 
 bool Map::hasValidPath() const {
@@ -97,10 +80,12 @@ bool Map::hasValidPath() const {
         Vector2 current = queue.front();
         queue.pop();
 
+        // If we reach the exit point, the path is valid
         if (current.x == exitPoint.x && current.y == exitPoint.y) {
             return true;
         }
 
+        // Check all four directions
         for (int i = 0; i < 4; i++) {
             int newX = current.x + dx[i];
             int newY = current.y + dy[i];
@@ -112,6 +97,7 @@ bool Map::hasValidPath() const {
             }
         }
     }
+
     return false;
 }
 
@@ -132,7 +118,6 @@ bool Map::placeTower(int x, int y) {
     return true;
 }
 
-// Replace your current Map::draw() function with this version
 void Map::draw(int offsetX, int offsetY, int cellSize) const {
     // If parameters aren't provided, calculate default values
     if (cellSize == 0) {
@@ -141,7 +126,6 @@ void Map::draw(int offsetX, int offsetY, int cellSize) const {
         offsetY = (GetScreenHeight() - (height * cellSize)) / 2;
     }
 
-    // Draw the map grid with the provided parameters
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             Rectangle cellRect = {
@@ -157,7 +141,7 @@ void Map::draw(int offsetX, int offsetY, int cellSize) const {
                 case CellType::PATH: cellColor = BROWN; break;
                 case CellType::ENTRY: cellColor = BLUE; break;
                 case CellType::EXIT: cellColor = RED; break;
-                case CellType::TOWER: cellColor = GRAY; break;
+                case CellType::TOWER: break;
                 default: cellColor = LIGHTGRAY;
             }
 
@@ -171,14 +155,13 @@ void Map::setCellType(int x, int y, CellType type) {
     if (isValidCoordinate(x, y)) {
         grid[y][x] = type;
 
-        // Update entry/exit points if necessary
         if (type == CellType::ENTRY) {
             entryPoint = {static_cast<float>(x), static_cast<float>(y)};
-        }
-        else if (type == CellType::EXIT) {
+            std::cout << "Entry Point Set: (" << entryPoint.x << ", " << entryPoint.y << ")\n";
+        } else if (type == CellType::EXIT) {
             exitPoint = {static_cast<float>(x), static_cast<float>(y)};
+            std::cout << "Exit Point Set: (" << exitPoint.x << ", " << exitPoint.y << ")\n";
         }
-
         notifyObservers();
     }
 }
@@ -186,9 +169,19 @@ void Map::setCellType(int x, int y, CellType type) {
 bool Map::validateMap() const {
     // Check if entry and exit points are set
     if (entryPoint.x == -1 || exitPoint.x == -1) {
+        std::cerr << "Entry or exit point not set!" << std::endl;
         return false;
     }
 
-    // Check if there's a valid path
-    return hasValidPath();
+    // Check if there's a valid path from entry to exit
+    if (!hasValidPath()) {
+        std::cerr << "No valid path from entry to exit!" << std::endl;
+        return false;
+    }
+
+    return true;
+}
+
+void Map::setPath(const std::vector<Vector2>& path) {
+    this->path = path;
 }

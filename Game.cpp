@@ -15,12 +15,14 @@ Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSiz
 
     // Don't initialize critterWave here, wait until we have a path
     critterWave = nullptr;  // Initialize to nullptr instead of empty path
+    mapEditor = nullptr;  // Initialize mapEditor to nullptr
 }
 
 Game::~Game() {
     delete currentMap, towerManager;
     currentMap = nullptr;
     towerManager = nullptr;
+    mapEditor = nullptr;  // Clean up mapEditor
 }
 
 void Game::drawTowerMenu() const {
@@ -364,31 +366,49 @@ void Game::handleTowerMenuClick(Vector2 mousePos) {
     }
 }
 
-void Game::initializeMap() {
-    if (currentMap) delete currentMap;
 
-    auto [width, height] = mapSizes[selectedSize];
-    currentMap = new Map(width, height);
-    currentMap->generateRandomMap();
-    state = GameState::PLAYING;
-}
-
+// Game.cpp
 void Game::handleMapSelection() {
-    // Handle keyboard input for size selection
-    if (IsKeyPressed(KEY_UP)) {
-        selectedSize = (selectedSize - 1 + mapSizes.size()) % mapSizes.size();
-    }
-    if (IsKeyPressed(KEY_DOWN)) {
-        selectedSize = (selectedSize + 1) % mapSizes.size();
-    }
-    if (IsKeyPressed(KEY_ENTER)) {
-        initializeMap();
+    if (state == GameState::MAP_SELECTION) {
+        // Handle keyboard input for size selection
+        if (IsKeyPressed(KEY_UP)) {
+            selectedSize = (selectedSize - 1 + mapSizes.size()) % mapSizes.size();
+        }
+        if (IsKeyPressed(KEY_DOWN)) {
+            selectedSize = (selectedSize + 1) % mapSizes.size();
+        }
+        if (IsKeyPressed(KEY_ENTER)) {
+            // Initialize the map with the selected size
+            auto [width, height] = mapSizes[selectedSize];
+            currentMap = new Map(width, height);
+            mapEditor = std::make_unique<MapEditor>(width, height);
+            state = GameState::MAP_EDITING;
+        }
+    } else if (state == GameState::MAP_EDITING) {
+        // Update the map editor
+        mapEditor->update();
+
+        // Check if the user has finished editing the map
+        if (IsKeyPressed(KEY_ENTER)) {
+            if (mapEditor->getMap()->validateMap()) {
+                currentMap = new Map(*mapEditor->getMap());
+
+                // Calculate the path after the map is validated
+                currentMap->calculatePath();
+
+                state = GameState::PLAYING;
+                mapEditor = nullptr;
+            } else {
+                std::cout << "Map is invalid! Please ensure there is a valid path from entry to exit." << std::endl;
+            }
+        }
     }
 }
 
 void Game::update() {
     switch (state) {
         case GameState::MAP_SELECTION:
+        case GameState::MAP_EDITING:
             handleMapSelection();
             break;
 
@@ -458,7 +478,7 @@ void Game::update() {
         } else {
             ++it;
         }
-    }    
+    }
 }
 
 
@@ -524,6 +544,10 @@ void Game::draw() const {
             drawMapSelection();
             break;
 
+        case GameState::MAP_EDITING:
+            mapEditor->draw();  // Draw the map editor
+            break;
+
         case GameState::PLAYING:
             int gameAreaHeight = GetScreenHeight() - towerMenuHeight;
             int gameAreaWidth = GetScreenWidth() - sideMenuWidth; // Always subtract side menu width
@@ -546,9 +570,9 @@ void Game::draw() const {
             }
 
             // Draw critters
-        if (critterWave && !critterWave->getCritters().empty()) {
-            critterWave->draw();
-        }
+            if (critterWave && !critterWave->getCritters().empty()) {
+                critterWave->draw();
+            }
 
             // Always draw the side menu background
             drawSideMenu();
@@ -592,9 +616,9 @@ void Game::draw() const {
             notification.position.x - MeasureText(notificationText.c_str(), 20) / 2.0f,
             notification.position.y - 30.0f - yOffset
         };
-        
+
         DrawText(notificationText.c_str(), textPos.x, textPos.y, 20, textColor);
-    }    
+    }
 }
 
 void Game::drawSideMenu() const {
@@ -613,6 +637,7 @@ void Game::drawSideMenu() const {
     DrawText("Tower Info", menuRect.x + 10, 20, 24, BLACK);
 }
 
+// Game.cpp
 void Game::handleSideMenuButtonClick(Vector2 mousePos) {
     Rectangle buttonRect = {
         static_cast<float>(GetScreenWidth() - sideMenuWidth + 10),
@@ -640,10 +665,6 @@ void Game::handleSideMenuButtonClick(Vector2 mousePos) {
                     offsetY + point.y * cellSize + cellSize / 2.0f
                 };
                 screenPath.push_back(screenPoint);
-
-                // Debug print
-                std::cout << "Path point (grid): (" << point.x << ", " << point.y << ") -> (screen): ("
-                          << screenPoint.x << ", " << screenPoint.y << ")" << std::endl;
             }
 
             critterWave = std::make_unique<CritterWave>(1, screenPath, cellSize, offsetX, offsetY);
@@ -718,9 +739,9 @@ void Game::onCritterReachedEnd(const Critter& critter) {
     // Deduct currency based on critter's strength
     int penalty = critter.getStrength() * 10; // Multiply by 10 to make the penalty more significant
     towerManager->addCurrency(-penalty); // Using addCurrency with a negative value to deduct
-    
+
     std::cout << "Critter reached the end. Player loses " << penalty << " gold!" << std::endl;
-    
+
     // Add visual notification at the critter's position
     addRewardNotification(critter.getPosition(), -penalty);
 }
@@ -730,7 +751,7 @@ void Game::onCritterDefeated(const Critter& critter) {
     int reward = critter.getReward();
     towerManager->addCurrency(reward);
     std::cout << "Critter defeated! Player receives " << reward << " gold!" << std::endl;
-    
+
     // Add visual notification at the critter's position
     addRewardNotification(critter.getPosition(), reward);
 }

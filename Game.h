@@ -2,13 +2,14 @@
 #include "Map.h"
 #include <memory>
 #include <vector>
-
 #include "CritterWave.h"
 #include "TowerManager.h"
 #include "CritterObserver.h"
+#include "MapEditor.h"  // Include MapEditor header
 
 enum class GameState {
     MAP_SELECTION,
+    MAP_EDITING,
     PLAYING
 };
 
@@ -21,11 +22,10 @@ private:
     int selectedSize;
 
     std::unique_ptr<CritterWave> critterWave;
-
+    std::unique_ptr<MapEditor> mapEditor;  // MapEditor instance
 
     void drawMapSelection() const;
     void handleMapSelection();
-    void initializeMap();
     std::string selectedTowerType;
     float towerMenuHeight = 100;
     float sideMenuWidth = 200;  // Width of the side menu for tower info
@@ -37,9 +37,7 @@ private:
 
     // New methods for permanent side menu
     void drawSideMenu() const;
-
     void handleSideMenuButtonClick(Vector2 mousePos);
-
     void drawSideMenuButton() const;
     void drawSideMenuDefault() const;
     void drawTowerInfoInSideMenu() const;

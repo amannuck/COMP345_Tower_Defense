@@ -1,12 +1,9 @@
 #pragma once
 #include <raylib.h>
 #include <string>
+#include <memory>
 
 #include "Critter.h"
-
-// Tower.h
-#pragma once
-#include <vector>
 
 class Tower {
 protected:
@@ -20,27 +17,17 @@ protected:
     int upgradeCost;
     std::string name;
     Color color;
-    float projectileSpeed;  // Speed of the projectiles
-
-    // Projectile-related variables
-    struct Projectile {
-        Vector2 position;
-        Vector2 velocity;
-        bool active;
-    };
-    std::vector<Projectile> projectiles;
 
 public:
-    Tower(float range, float power, float fireRate, int buyCost, int upgradeCost,
-          const std::string& name, const Color& color, float projectileSpeed = 100.0f);
+    Tower(float range, float power, float fireRate, int buyCost, int upgradeCost, 
+          const std::string& name, const Color& color);
     virtual ~Tower();
 
     virtual void upgrade();
     void attackCritters(std::vector<Critter>& critters);
     virtual int getRefundValue() const;
     virtual void draw() const;
-    void updateProjectiles(std::vector<Critter>& critters);
-
+    
     // Getters
     float getRange() const { return range; }
     float getPower() const { return power; }
@@ -50,11 +37,12 @@ public:
     int getLevel() const { return level; }
     const std::string& getName() const { return name; }
     Vector2 getPosition() const { return position; }
-
+    
     void setPosition(Vector2 pos) { position = pos; }
     bool canShoot() const;
     void resetShotTimer();
 };
+
 
 class BasicTower : public Tower {
 public:
