@@ -5,7 +5,7 @@
 #include <memory>
 #include <ostream>
 
-Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSize(0), isEditingWidth(true), currentWave(0) {
+Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSize(0), isEditingWidth(true), currentWave(0), lives(5) {
     widthInput = "";
     heightInput = "";
     mapSizes = {
@@ -19,16 +19,20 @@ Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSiz
 }
 
 Game::~Game() {
-    delete currentMap, towerManager;
+    delete currentMap;
     currentMap = nullptr;
-    towerManager = nullptr;
     mapEditor = nullptr;  // Clean up mapEditor
 }
 
 void Game::drawTowerMenu() const {
-    // Draw bank balance at top
+    // Draw bank balance at top left
     std::string bankText = "Bank: $" + std::to_string(towerManager->getCurrency());
     DrawText(bankText.c_str(), 10, 10, 30, RED);
+    
+    // Draw lives at top right
+    std::string livesText = "Lives: " + std::to_string(lives);
+    int textWidth = MeasureText(livesText.c_str(), 30);
+    DrawText(livesText.c_str(), GetScreenWidth() - textWidth - sideMenuWidth - 10, 10, 30, RED);
 
     // Tower menu background (at the bottom of the screen)
     DrawRectangle(0, GetScreenHeight() - towerMenuHeight, GetScreenWidth(), towerMenuHeight, LIGHTGRAY);
@@ -499,6 +503,23 @@ void Game::update() {
             updateTowers();
             break;
         }
+        
+        case GameState::GAME_OVER:
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) || IsKeyPressed(KEY_ENTER)) {
+                // Reset game state and start new game
+                state = GameState::PLAYING;
+                resetLives();
+                
+                // Reset wave counter and possibly reset player's currency
+                currentWave = 0;
+                towerManager = std::make_unique<TowerManager>(1000);
+                
+                // Clear any existing critters or towers
+                critterWave = nullptr;
+                selectedTower = nullptr;
+                selectedTowerType = "";
+            }
+            break;
     }
     for (auto it = rewardNotifications.begin(); it != rewardNotifications.end();) {
         it->timer -= GetFrameTime();
@@ -569,6 +590,38 @@ void Game::drawMapSelection() const {
     DrawText(instructions, instructionsPos.x, instructionsPos.y, instructionSize, DARKGRAY);
 }
 
+void Game::drawGameOver() const {
+    // Draw a semi-transparent overlay
+    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 200});
+    
+    // Draw game over text
+    const char* gameOverText = "GAME OVER";
+    int fontSize = 60;
+    Vector2 textPos = {
+        (GetScreenWidth() - MeasureText(gameOverText, fontSize)) / 2.0f,
+        GetScreenHeight() / 3.0f
+    };
+    DrawText(gameOverText, textPos.x, textPos.y, fontSize, RED);
+    
+    // Draw wave reached text
+    std::string waveText = "You reached wave: " + std::to_string(currentWave);
+    int waveTextSize = 30;
+    Vector2 waveTextPos = {
+        (GetScreenWidth() - MeasureText(waveText.c_str(), waveTextSize)) / 2.0f,
+        textPos.y + fontSize + 20
+    };
+    DrawText(waveText.c_str(), waveTextPos.x, waveTextPos.y, waveTextSize, WHITE);
+    
+    // Draw restart instructions
+    const char* instructions = "Click or press ENTER to start a new game";
+    int instructionSize = 20;
+    Vector2 instructionsPos = {
+        (GetScreenWidth() - MeasureText(instructions, instructionSize)) / 2.0f,
+        GetScreenHeight() * 2.0f / 3.0f
+    };
+    DrawText(instructions, instructionsPos.x, instructionsPos.y, instructionSize, WHITE);
+}
+
 void Game::draw() const {
     switch (state) {
         case GameState::MAP_SELECTION:
@@ -579,7 +632,7 @@ void Game::draw() const {
             mapEditor->draw();  // Draw the map editor
             break;
 
-        case GameState::PLAYING:
+        case GameState::PLAYING: {
             int gameAreaHeight = GetScreenHeight() - towerMenuHeight;
             int gameAreaWidth = GetScreenWidth() - sideMenuWidth; // Always subtract side menu width
 
@@ -624,6 +677,11 @@ void Game::draw() const {
                 DrawText("Click to place tower (Right click to cancel)",
                         (GetScreenWidth() - sideMenuWidth) / 2 - 100, 20, 20, BLACK);
             }
+            break;
+        }
+            
+        case GameState::GAME_OVER:
+            drawGameOver();
             break;
     }
     for (const auto& notification : rewardNotifications) {
@@ -678,45 +736,7 @@ void Game::handleSideMenuButtonClick(Vector2 mousePos) {
     };
 
     if (CheckCollisionPointRec(mousePos, buttonRect)) {
-        // Ensure the map is initialized and has a path
-        if (currentMap && !currentMap->getPath().empty()) {
-            // Increment the current wave number
-            currentWave++;
-            
-            // Calculate cell size and offsets
-            int gameAreaHeight = GetScreenHeight() - towerMenuHeight;
-            int gameAreaWidth = GetScreenWidth() - sideMenuWidth;
-            int cellSize = std::min(gameAreaWidth / (currentMap->getWidth() + 2),
-                                gameAreaHeight / (currentMap->getHeight() + 2));
-            int offsetX = (gameAreaWidth - (currentMap->getWidth() * cellSize)) / 2;
-            int offsetY = (gameAreaHeight - (currentMap->getHeight() * cellSize)) / 2;
-
-            // Convert the path from grid coordinates to screen coordinates
-            std::vector<Vector2> screenPath;
-            for (const auto& point : currentMap->getPath()) {
-                Vector2 screenPoint = {
-                    offsetX + point.x * cellSize + cellSize / 2.0f,
-                    offsetY + point.y * cellSize + cellSize / 2.0f
-                };
-                screenPath.push_back(screenPoint);
-            }
-
-            critterWave = std::make_unique<CritterWave>(currentWave, screenPath, cellSize, offsetX, offsetY);
-
-            // Register the game as an observer for each critter
-            for (auto& critter : critterWave->getCritters()) {
-                critter.addObserver(this);
-            }
-
-            // Activate the first two critters
-            for (int i = 0; i < 2; i++) {
-                if (i < critterWave->getCritters().size()) {
-                    critterWave->getCritters()[i].activate();
-                }
-            }
-        } else {
-            std::cerr << "ERROR: No map or path available to spawn critters." << std::endl;
-        }
+        startNextWave();
     }
 }
 
@@ -774,11 +794,19 @@ void Game::drawSideMenuDefault() const {
 }
 
 void Game::onCritterReachedEnd(const Critter& critter) {
+    // Deduct a life
+    lives--;
+    
+    // Check if game over
+    if (lives <= 0) {
+        state = GameState::GAME_OVER;
+    }
+
     // Deduct currency based on critter's strength
     int penalty = critter.getStrength() * 10; // Multiply by 10 to make the penalty more significant
     towerManager->addCurrency(-penalty); // Using addCurrency with a negative value to deduct
 
-    std::cout << "Critter reached the end. Player loses " << penalty << " gold!" << std::endl;
+    std::cout << "Critter reached the end. Player loses " << penalty << " gold and 1 life! Lives remaining: " << lives << std::endl;
 
     // Add visual notification at the critter's position
     addRewardNotification(critter.getPosition(), -penalty);
@@ -800,4 +828,54 @@ void Game::addRewardNotification(const Vector2& position, int amount) {
     notification.amount = amount;
     notification.timer = 1.5f; // Display for 1.5 seconds
     rewardNotifications.push_back(notification);
+}
+
+void Game::startNextWave() {
+    // Ensure the map is initialized and has a path
+    if (currentMap && !currentMap->getPath().empty()) {
+        // Increment the current wave number
+        currentWave++;
+        
+        // Reset lives at the start of each new wave
+        resetLives();
+        
+        // Calculate cell size and offsets
+        int gameAreaHeight = GetScreenHeight() - towerMenuHeight;
+        int gameAreaWidth = GetScreenWidth() - sideMenuWidth;
+        int cellSize = std::min(gameAreaWidth / (currentMap->getWidth() + 2),
+                            gameAreaHeight / (currentMap->getHeight() + 2));
+        int offsetX = (gameAreaWidth - (currentMap->getWidth() * cellSize)) / 2;
+        int offsetY = (gameAreaHeight - (currentMap->getHeight() * cellSize)) / 2;
+
+        // Convert the path from grid coordinates to screen coordinates
+        std::vector<Vector2> screenPath;
+        for (const auto& point : currentMap->getPath()) {
+            Vector2 screenPoint = {
+                offsetX + point.x * cellSize + cellSize / 2.0f,
+                offsetY + point.y * cellSize + cellSize / 2.0f
+            };
+            screenPath.push_back(screenPoint);
+        }
+
+        critterWave = std::make_unique<CritterWave>(currentWave, screenPath, cellSize, offsetX, offsetY);
+
+        // Register the game as an observer for each critter
+        for (auto& critter : critterWave->getCritters()) {
+            critter.addObserver(this);
+        }
+
+        // Activate the first two critters
+        for (int i = 0; i < 2; i++) {
+            if (i < critterWave->getCritters().size()) {
+                critterWave->getCritters()[i].activate();
+            }
+        }
+    } else {
+        std::cerr << "ERROR: No map or path available to spawn critters." << std::endl;
+    }
+}
+
+void Game::resetLives() {
+    lives = 5;
+    std::cout << "Lives reset to " << lives << std::endl;
 }

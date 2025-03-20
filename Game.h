@@ -10,7 +10,8 @@
 enum class GameState {
     MAP_SELECTION,
     MAP_EDITING,
-    PLAYING
+    PLAYING,
+    GAME_OVER
 };
 
 class Game : public CritterObserver {
@@ -28,6 +29,7 @@ private:
     std::unique_ptr<MapEditor> mapEditor;  // MapEditor instance
     
     int currentWave = 0;  // Track the current wave number
+    int lives = 5;        // Lives counter
 
     void drawMapSelection() const;
     void handleMapSelection();
@@ -46,6 +48,7 @@ private:
     void drawSideMenuButton() const;
     void drawSideMenuDefault() const;
     void drawTowerInfoInSideMenu() const;
+    void drawGameOver() const;
 
     void handleTowerSelection(Vector2 mousePos);
     void handleTowerInfoMenuClick(Vector2 mousePos);
@@ -77,4 +80,6 @@ public:
     void onCritterReachedEnd(const Critter& critter) override;
     void onCritterDefeated(const Critter& critter) override;
     void addRewardNotification(const Vector2& position, int amount);
+    void startNextWave();
+    void resetLives();
 };
