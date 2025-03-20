@@ -863,13 +863,6 @@ void Game::startNextWave() {
         for (auto& critter : critterWave->getCritters()) {
             critter.addObserver(this);
         }
-
-        // Activate the first two critters
-        for (int i = 0; i < 2; i++) {
-            if (i < critterWave->getCritters().size()) {
-                critterWave->getCritters()[i].activate();
-            }
-        }
     } else {
         std::cerr << "ERROR: No map or path available to spawn critters." << std::endl;
     }
