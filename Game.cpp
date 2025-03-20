@@ -5,7 +5,7 @@
 #include <memory>
 #include <ostream>
 
-Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSize(0), isEditingWidth(true) {
+Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSize(0), isEditingWidth(true), currentWave(0) {
     widthInput = "";
     heightInput = "";
     mapSizes = {
@@ -680,6 +680,9 @@ void Game::handleSideMenuButtonClick(Vector2 mousePos) {
     if (CheckCollisionPointRec(mousePos, buttonRect)) {
         // Ensure the map is initialized and has a path
         if (currentMap && !currentMap->getPath().empty()) {
+            // Increment the current wave number
+            currentWave++;
+            
             // Calculate cell size and offsets
             int gameAreaHeight = GetScreenHeight() - towerMenuHeight;
             int gameAreaWidth = GetScreenWidth() - sideMenuWidth;
@@ -698,7 +701,7 @@ void Game::handleSideMenuButtonClick(Vector2 mousePos) {
                 screenPath.push_back(screenPoint);
             }
 
-            critterWave = std::make_unique<CritterWave>(1, screenPath, cellSize, offsetX, offsetY);
+            critterWave = std::make_unique<CritterWave>(currentWave, screenPath, cellSize, offsetX, offsetY);
 
             // Register the game as an observer for each critter
             for (auto& critter : critterWave->getCritters()) {
@@ -764,6 +767,10 @@ void Game::drawSideMenuDefault() const {
     // Example stats (replace with actual game stats)
     std::string towersText = "Towers: " + std::to_string(towerManager->getTowers().size());
     DrawText(towersText.c_str(), menuRect.x + 10, 180, 16, BLACK);
+    
+    // Display current wave number
+    std::string waveText = "Current Wave: " + std::to_string(currentWave);
+    DrawText(waveText.c_str(), menuRect.x + 10, 210, 16, BLACK);
 }
 
 void Game::onCritterReachedEnd(const Critter& critter) {

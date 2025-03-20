@@ -26,6 +26,8 @@ private:
 
     std::unique_ptr<CritterWave> critterWave;
     std::unique_ptr<MapEditor> mapEditor;  // MapEditor instance
+    
+    int currentWave = 0;  // Track the current wave number
 
     void drawMapSelection() const;
     void handleMapSelection();
