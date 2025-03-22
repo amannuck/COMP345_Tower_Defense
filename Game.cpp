@@ -57,10 +57,11 @@ void Game::drawTowerMenu() const {
     TowerOption options[] = {
         {"Basic", "Basic Tower", "DMG: 10\nRange: 150", 100, RED},
         {"Area", "Area Tower", "DMG: 8\nRange: 120", 150, BLUE},
-        {"Slow", "Slow Tower", "DMG: 5\nSlow: 30%", 125, YELLOW}
+        {"Slow", "Slow Tower", "DMG: 5\nSlow: 30%", 125, YELLOW},
+        {"Sniper", "Sniper Tower", "DMG: 3\nRange: 300", 125, PURPLE}
     };
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
         Rectangle button = {
             static_cast<float>(startX + i * (buttonWidth + padding)),
             static_cast<float>(startY),
@@ -345,7 +346,7 @@ void Game::handleTowerMenuClick(Vector2 mousePos) {
     const int totalWidth = (buttonWidth + padding) * 3 - padding;
     int startX = (GetScreenWidth() - totalWidth) / 2;
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
         Rectangle button = {
             static_cast<float>(startX + i * (buttonWidth + padding)),
             static_cast<float>(startY),
@@ -359,6 +360,7 @@ void Game::handleTowerMenuClick(Vector2 mousePos) {
                 case 0: towerType = "Basic"; break;
                 case 1: towerType = "Area"; break;
                 case 2: towerType = "Slow"; break;
+                case 3: towerType = "Sniper"; break;
             }
 
             if (towerManager->canAffordTower(towerType)) {

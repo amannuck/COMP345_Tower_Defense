@@ -48,6 +48,8 @@ add_executable(${PROJECT_NAME} main.cpp
         critter.h
         critter.cpp
         CritterObserver.h
+        TargetingStrategy.cpp
+        TargetingStrategy.h
 )
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
