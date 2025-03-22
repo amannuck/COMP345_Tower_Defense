@@ -1,5 +1,7 @@
+// CritterWave.h
 #pragma once
 #include "Critter.h"
+#include "CritterFactory.h"
 #include <vector>
 
 class CritterWave {
@@ -9,6 +11,7 @@ private:
     int currentCritterIndex;
     float spawnTimer;
     float spawnDelay;
+    int waveLevel;  // Added waveLevel field to track current wave
 
 public:
     CritterWave(int waveLevel, const std::vector<Vector2>& path);
@@ -22,4 +25,5 @@ public:
     bool allCrittersDefeated() const;
     std::vector<Critter>& getCritters();
     bool isStillSpawning() const { return currentCritterIndex < critters.size(); }
+    int getWaveLevel() const { return waveLevel; }  // Added getter for wave level
 };

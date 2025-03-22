@@ -1,59 +1,53 @@
+// CritterWave.cpp
 #include "CritterWave.h"
 #include <iostream>
 
 CritterWave::CritterWave(int waveLevel, const std::vector<Vector2>& path)
-    : path(path), currentCritterIndex(0), spawnTimer(0), spawnDelay(1.5f) {
+    : path(path), currentCritterIndex(0), spawnTimer(0), spawnDelay(1.5f), waveLevel(waveLevel) {
 
     if (path.empty()) {
         std::cerr << "ERROR: Path is empty! Cannot spawn critters." << std::endl;
         return;
     }
 
+    // Use the factory pattern to create critters
+    auto factory = CritterFactoryCreator::createFactory(waveLevel);
     int critterCount = 5 + waveLevel;
-    for (int i = 0; i < critterCount; i++) {
-        float speed = 1.0f + (waveLevel * 0.5f);
-        float hp = 50.0f + (waveLevel * 10);
-        int reward = 10 + (waveLevel * 2);
-        int strength = 2 + waveLevel;
+    critters = factory->createWave(path, critterCount);
 
-        Critter critter(waveLevel, speed, hp, reward, strength, path);
+    // Set initial position for all critters
+    for (auto& critter : critters) {
         critter.setPosition(path.front());
-        critters.push_back(critter);
     }
 
     std::cout << "✅ CritterWave created! " << critters.size() << " critters initialized." << std::endl;
 }
 
 CritterWave::CritterWave(int waveLevel, const std::vector<Vector2>& path, int cellSize, int offsetX, int offsetY)
-    : path(path), currentCritterIndex(0), spawnTimer(0), spawnDelay(1.5f) {
+    : path(path), currentCritterIndex(0), spawnTimer(0), spawnDelay(1.5f), waveLevel(waveLevel) {
 
     if (path.empty()) {
         std::cerr << "ERROR: Path is empty! Cannot spawn critters." << std::endl;
         return;
     }
 
+    // Use the factory pattern to create critters
+    auto factory = CritterFactoryCreator::createFactory(waveLevel);
     int critterCount = 5 + waveLevel;
-    for (int i = 0; i < critterCount; i++) {
-        float speed = 40.0f + (waveLevel * 5.0f);
-        float hp = 50.0f + (waveLevel * 10);
-        int reward = 10 + (waveLevel * 2);
-        int strength = 2 + waveLevel;
+    critters = factory->createWave(path, critterCount);
 
-        // Use the screen coordinates directly
-        Critter critter(waveLevel, speed, hp, reward, strength, path);
-
-        critter.setPosition(path.front());  // Start at the first path point
-        critters.push_back(critter);
-
+    // Set initial position for all critters
+    for (auto& critter : critters) {
+        critter.setPosition(path.front());
+        
         // Debug print
-        std::cout << "Critter " << i << " initialized at position: ("
+        std::cout << "Critter " << currentCritterIndex << " initialized at position: ("
                   << path.front().x << ", " << path.front().y << ")" << std::endl;
     }
 
     std::cout << "✅ CritterWave created! " << critters.size() << " critters initialized." << std::endl;
 }
 
-// Add this function to CritterWave.cpp
 void CritterWave::update() {
     // Call the version with deltaTime using a default value
     update(GetFrameTime());
@@ -97,8 +91,6 @@ void CritterWave::draw() const {
     }
     std::cout << "🎨 Drawing " << drawnCritters << " critters." << std::endl;
 }
-
-
 
 bool CritterWave::allCrittersDefeated() const {
     return currentCritterIndex >= critters.size();
