@@ -42,4 +42,8 @@ public:
     void removeObserver(CritterObserver* observer);
     void notifyReachedEnd();
     void notifyDefeated();
+
+    int getPathIndex() const { return pathIndex; }
+
+
 };
