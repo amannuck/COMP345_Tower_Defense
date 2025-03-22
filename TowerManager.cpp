@@ -54,5 +54,6 @@ std::unique_ptr<Tower> TowerManager::createTower(const std::string& towerType) c
     if (towerType == "Basic") return std::make_unique<BasicTower>();
     if (towerType == "Area") return std::make_unique<AreaTower>();
     if (towerType == "Slow") return std::make_unique<SlowTower>();
+    if (towerType == "Sniper") return std::make_unique<SniperTower>();
     return nullptr;
 }
