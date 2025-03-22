@@ -14,6 +14,10 @@ private:
     int pathIndex;
     bool active;
     bool reachedEndFlag = false;
+    
+    // Add slow effect variables
+    float slowFactor = 1.0f;  // 1.0 = normal speed, less than 1 = slowed
+    float slowDuration = 0.0f;  // Duration of slow effect
 
     std::vector<CritterObserver*> observers;  // List of observers
 
@@ -36,14 +40,14 @@ public:
     int getReward() const { return reward; }
     int getStrength() const { return strength; }
     float getHitPoints() const { return hitPoints; }
+    int getPathIndex() const { return pathIndex; }
+    
+    // Add slow effect method
+    void applySlowEffect(float factor, float duration);
 
     // Observer management
     void addObserver(CritterObserver* observer);
     void removeObserver(CritterObserver* observer);
     void notifyReachedEnd();
     void notifyDefeated();
-
-    int getPathIndex() const { return pathIndex; }
-
-
 };
