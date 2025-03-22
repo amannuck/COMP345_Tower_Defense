@@ -111,6 +111,9 @@ void BurningDecorator::attackCritters(std::vector<Critter>& critters) {
 
 // FreezingDecorator implementation
 void FreezingDecorator::attackCritters(std::vector<Critter>& critters) {
+    // First let the wrapped tower do its normal attack
+    if (!wrappedTower->canShoot()) return;
+    
     // Use the base attackCritters to find and hit the primary target
     Critter* primaryTarget = nullptr;
     
