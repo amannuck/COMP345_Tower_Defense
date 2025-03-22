@@ -9,8 +9,24 @@ Critter::Critter(int level, float speed, float hp, int reward, int strength, con
     : level(level), speed(speed), hitPoints(hp), maxHitPoints(hp), reward(reward), strength(strength),
       position(path.front()), path(path), pathIndex(0), active(false) {}
 
+// Add slow effect method implementation
+void Critter::applySlowEffect(float factor, float duration) {
+    // Apply the strongest slow effect
+    if (factor < slowFactor || (factor == slowFactor && duration > slowDuration)) {
+        slowFactor = factor;
+        slowDuration = duration;
+    }
+}
 
 void Critter::move() {
+    // Update slow effect
+    if (slowDuration > 0) {
+        slowDuration -= GetFrameTime();
+        if (slowDuration <= 0) {
+            slowFactor = 1.0f;  // Reset to normal speed
+        }
+    }
+    
     if (pathIndex < path.size() - 1) {
         Vector2 target = path[pathIndex + 1];
         //std::cout << "Moving critter to target: (" << target.x << ", " << target.y << ")" << std::endl;
@@ -18,7 +34,10 @@ void Critter::move() {
         Vector2 direction = Vector2Subtract(target, position);
         direction = Vector2Normalize(direction);
 
-        position = Vector2Add(position, Vector2Scale(direction, speed * GetFrameTime()));
+        // Apply slow factor to movement speed
+        float effectiveSpeed = speed * slowFactor;
+        
+        position = Vector2Add(position, Vector2Scale(direction, effectiveSpeed * GetFrameTime()));
 
         if (Vector2Distance(position, target) < 1.0f) {
             pathIndex++;
@@ -67,6 +86,12 @@ void Critter::draw() const {
 
     float healthBarWidth = 20 * ((float)hitPoints / (float)maxHitPoints);
     DrawRectangle(position.x - 10, position.y - 15, healthBarWidth, 5, GREEN);
+    
+    // Add visual indicator for slow effect
+    if (slowFactor < 1.0f) {
+        DrawCircleV(position, 13, ColorAlpha(BLUE, 0.5f));
+        DrawText("SLOW", position.x - 15, position.y - 25, 10, BLUE);
+    }
 }
 
 void Critter::activate() {
