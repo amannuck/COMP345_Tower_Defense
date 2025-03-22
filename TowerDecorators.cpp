@@ -1,6 +1,6 @@
 // TowerDecorators.cpp
 #include "Tower.h"
-
+#include "raymath.h"
 // SplashDecorator implementation
 void SplashDecorator::attackCritters(std::vector<Critter>& critters) {
     if (!wrappedTower->canShoot()) return;

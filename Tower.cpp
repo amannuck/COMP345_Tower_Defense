@@ -158,7 +158,7 @@ void SlowTower::attackCritters(std::vector<Critter>& critters) {
 
 // SniperTower implementation
 SniperTower::SniperTower()
-    : Tower(300.0f, 30.0f, 0.5f, 200, 100, "Sniper Tower", PURPLE),
+    : Tower(300.0f, 30.0f, 0.5f, 500, 100, "Sniper Tower", PURPLE),
       criticalChance(0.25f), criticalMultiplier(2.0f) {
     // Sniper tower uses lowest health critter strategy
     setTargetingStrategy(std::make_unique<LowestHealthStrategy>());

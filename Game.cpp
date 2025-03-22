@@ -43,7 +43,7 @@ void Game::drawTowerMenu() const {
     const int buttonHeight = 80;
     const int padding = 20;
     const int startY = GetScreenHeight() - buttonHeight - (towerMenuHeight - buttonHeight) / 2;
-    const int totalWidth = (buttonWidth + padding) * 3 - padding;
+    const int totalWidth = (buttonWidth + padding) * 4 - padding;
     int startX = (GetScreenWidth() - totalWidth) / 2;
 
     struct TowerOption {
@@ -58,7 +58,7 @@ void Game::drawTowerMenu() const {
         {"Basic", "Basic Tower", "DMG: 10\nRange: 150", 100, RED},
         {"Area", "Area Tower", "DMG: 8\nRange: 120", 150, BLUE},
         {"Slow", "Slow Tower", "DMG: 5\nSlow: 30%", 125, YELLOW},
-        {"Sniper", "Sniper Tower", "DMG: 3\nRange: 300", 125, PURPLE}
+        {"Sniper", "Sniper Tower", "DMG: 30\nRange: 300", 500, PURPLE}
     };
 
     for (int i = 0; i < 4; i++) {
@@ -331,7 +331,7 @@ void Game::handleTowerSelection(Vector2 mousePos) {
         float radius = 15.0f;  // Tower radius from draw method
 
         if (CheckCollisionPointCircle(mousePos, pos, radius)) {
-            selectedTower = tower.get();
+            selectedTower = dynamic_cast<Tower*>(tower.get());
             break;
         }
     }
