@@ -1,3 +1,4 @@
+// CritterWave.cpp
 #include "CritterWave.h"
 #include <iostream>
 
@@ -40,14 +41,13 @@ CritterWave::CritterWave(int waveLevel, const std::vector<Vector2>& path, int ce
         critter.setPosition(path.front());
         
         // Debug print
-        std::cout << "Critter initialized at position: ("
+        std::cout << "Critter " << currentCritterIndex << " initialized at position: ("
                   << path.front().x << ", " << path.front().y << ")" << std::endl;
     }
 
     std::cout << "✅ CritterWave created! " << critters.size() << " critters initialized." << std::endl;
 }
 
-// Add this function to CritterWave.cpp
 void CritterWave::update() {
     // Call the version with deltaTime using a default value
     update(GetFrameTime());
