@@ -1,6 +1,8 @@
 #pragma once
 #include "Critter.h"
+#include "CritterFactory.h"
 #include <vector>
+#include <memory>
 
 class CritterWave {
 private:
@@ -9,6 +11,7 @@ private:
     int currentCritterIndex;
     float spawnTimer;
     float spawnDelay;
+    int waveLevel;
 
 public:
     CritterWave(int waveLevel, const std::vector<Vector2>& path);
@@ -22,4 +25,5 @@ public:
     bool allCrittersDefeated() const;
     std::vector<Critter>& getCritters();
     bool isStillSpawning() const { return currentCritterIndex < critters.size(); }
+    int getWaveLevel() const { return waveLevel; }
 };
