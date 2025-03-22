@@ -93,7 +93,7 @@ Critter* MostAdvancedStrategy::selectTarget(const std::vector<Critter>& critters
         if (critter.isActive() && !critter.isDead()) {
             float distance = Vector2Distance(towerPosition, critter.getPosition());
             if (distance <= range) {
-                // Assuming the Critter class has a getPathIndex method
+                // Get the critter's position on the path
                 int pathIndex = critter.getPathIndex();
                 if (pathIndex > highestPathIndex) {
                     highestPathIndex = pathIndex;
