@@ -29,7 +29,15 @@ private:
     std::unique_ptr<MapEditor> mapEditor;  // MapEditor instance
     
     int currentWave = 0;  // Track the current wave number
-    int lives = 5;        // Lives counter
+    int lives = 10;        // Lives counter
+
+    struct WaveNotification {
+        int waveNumber;
+        float timer;
+        float fadeDuration;
+    };
+
+    WaveNotification waveNotification;
 
     void drawMapSelection() const;
     void handleMapSelection();
@@ -41,6 +49,7 @@ private:
 
     void drawTowerMenu() const;
     void handleTowerMenuClick(Vector2 mousePos);
+    bool hasActiveCritters() const;
 
     // New methods for permanent side menu
     void drawSideMenu() const;
@@ -73,6 +82,13 @@ private:
 public:
     Game();
     ~Game();
+
+    void showWaveNotification();
+
+    void updateWaveNotification();
+
+    void drawWaveNotification() const;
+
     void update();
     void draw() const;
     

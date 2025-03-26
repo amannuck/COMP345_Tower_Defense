@@ -56,7 +56,9 @@ void CritterWave::update() {
 void CritterWave::removeDeadCritters() {
     critters.erase(
         std::remove_if(critters.begin(), critters.end(),
-            [](Critter& critter) { return critter.isDead(); }),
+            [](Critter& critter) {
+                return critter.isDead() || critter.reachedEnd();
+            }),
         critters.end()
     );
 }

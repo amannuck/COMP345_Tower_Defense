@@ -27,20 +27,86 @@ int Tower::getRefundValue() const {
     return static_cast<int>(totalCost * refundRatio);
 }
 
-void Tower::attackCritters(std::vector<Critter>& critters) {
-    if (!canShoot()) return;  // Only attack if the tower can shoot
+// Add this static member to track active shots
+static std::vector<TowerShot> activeShots;
 
-    // Use targeting strategy to select a target
+void UpdateTowerShots(float deltaTime) {
+    for (auto& shot : activeShots) {
+        if (!shot.hit) {
+            // Move shot toward target
+            Vector2 direction = Vector2Subtract(shot.end, shot.currentPos);
+            float distance = Vector2Length(direction);
+
+            if (distance < 5.0f) { // Close enough to count as hit
+                shot.hit = true;
+            } else {
+                direction = Vector2Normalize(direction);
+                shot.currentPos = Vector2Add(shot.currentPos,
+                    Vector2Scale(direction, shot.speed * deltaTime));
+            }
+        }
+
+        shot.timer -= deltaTime;
+    }
+
+    // Remove expired shots
+    activeShots.erase(std::remove_if(activeShots.begin(), activeShots.end(),
+        [](const TowerShot& shot) { return shot.timer <= 0; }),
+        activeShots.end());
+}
+
+void DrawTowerShots() {
+    for (const auto& shot : activeShots) {
+        // Calculate triangle points (pointing toward target)
+        Vector2 direction = Vector2Subtract(shot.end, shot.start);
+        direction = Vector2Normalize(direction);
+
+        Vector2 perpendicular = { -direction.y, direction.x };
+
+        float size = 8.0f;
+        Vector2 tip = shot.currentPos;
+        Vector2 base1 = Vector2Add(tip, Vector2Scale(direction, -size));
+        base1 = Vector2Add(base1, Vector2Scale(perpendicular, size/2));
+        Vector2 base2 = Vector2Add(tip, Vector2Scale(direction, -size));
+        base2 = Vector2Subtract(base2, Vector2Scale(perpendicular, size/2));
+
+        // Draw with fade-out effect
+        Color drawColor = shot.color;
+        drawColor.a = static_cast<unsigned char>(255 * (shot.timer / 0.5f));
+
+        DrawTriangle(tip, base1, base2, drawColor);
+
+        // Optional: draw a trail
+        if (!shot.hit) {
+            DrawLineEx(shot.start, shot.currentPos, 2.0f,
+                ColorAlpha(drawColor, 0.3f));
+        }
+    }
+}
+
+void Tower::attackCritters(std::vector<Critter>& critters) {
+    if (!canShoot()) return;
+
     Critter* target = targetingStrategy->selectTarget(critters, position, range);
-    
+
     if (target) {
-        // Attack the target
+        // Create a new shot
+        TowerShot shot;
+        shot.start = position;
+        shot.end = target->getPosition();
+        shot.currentPos = position;
+        shot.speed = 700.0f; // pixels per second
+        shot.color = color;
+        shot.timer = 0.5f; // seconds to live
+        shot.hit = false;
+
+        // Add to active shots
+        activeShots.push_back(shot);
+
+        // Apply damage immediately
         target->takeDamage(power);
-        
-        // Draw attack effect
-        DrawLineEx(position, target->getPosition(), 2.0f, color);
-        
-        resetShotTimer();  // Reset the shot timer after attacking
+
+        resetShotTimer();
     }
 }
 
@@ -51,6 +117,9 @@ void Tower::draw() const {
     // Draw level indicator
     std::string levelText = "Lvl " + std::to_string(level);
     DrawText(levelText.c_str(), position.x - 10, position.y - 25, 10, BLACK);
+
+    // If you want to draw shots here instead of in Game.cpp
+    DrawTowerShots();
 }
 
 bool Tower::canShoot() const {
@@ -89,13 +158,23 @@ void AreaTower::upgrade() {
 void AreaTower::attackCritters(std::vector<Critter>& critters) {
     if (!canShoot()) return;
     
-    // Use targeting strategy to select main target
     Critter* mainTarget = targetingStrategy->selectTarget(critters, position, range);
-    
+
     if (mainTarget) {
         Vector2 impactPoint = mainTarget->getPosition();
         int hitCount = 0;
-        
+
+        // Create main shot
+        TowerShot mainShot;
+        mainShot.start = position;
+        mainShot.end = impactPoint;
+        mainShot.currentPos = position;
+        mainShot.speed = 600.0f; // Slightly slower for area effect
+        mainShot.color = color;
+        mainShot.timer = 0.5f;
+        mainShot.hit = false;
+        activeShots.push_back(mainShot);
+
         // Damage all critters in the area
         for (auto& critter : critters) {
             if (critter.isActive() && !critter.isDead()) {
@@ -103,14 +182,21 @@ void AreaTower::attackCritters(std::vector<Critter>& critters) {
                 if (distance <= areaRadius) {
                     critter.takeDamage(power);
                     hitCount++;
-                    
-                    // Draw attack effect
-                    DrawLineEx(position, critter.getPosition(), 1.0f, ColorAlpha(BLUE, 0.6f));
+
+                    // Create secondary shot for each hit critter
+                    TowerShot secondaryShot;
+                    secondaryShot.start = impactPoint;
+                    secondaryShot.end = critter.getPosition();
+                    secondaryShot.currentPos = impactPoint;
+                    secondaryShot.speed = 700.0f;
+                    secondaryShot.color = SKYBLUE;
+                    secondaryShot.timer = 0.3f;
+                    secondaryShot.hit = false;
+                    activeShots.push_back(secondaryShot);
                 }
             }
         }
-        
-        // Only reset shot timer if at least one critter was hit
+
         if (hitCount > 0) {
             // Draw area attack effect
             DrawCircleV(impactPoint, areaRadius, ColorAlpha(BLUE, 0.3f));
@@ -138,19 +224,23 @@ void SlowTower::upgrade() {
 void SlowTower::attackCritters(std::vector<Critter>& critters) {
     if (!canShoot()) return;
     
-    // Use targeting strategy to select a target
     Critter* target = targetingStrategy->selectTarget(critters, position, range);
-    
+
     if (target) {
-        // Apply damage
+        // Create slow projectile
+        TowerShot shot;
+        shot.start = position;
+        shot.end = target->getPosition();
+        shot.currentPos = position;
+        shot.speed = 700.0f; // Slower for slow tower
+        shot.color = YELLOW;
+        shot.timer = 0.6f;
+        shot.hit = false;
+        activeShots.push_back(shot);
+
+        // Apply effects
         target->takeDamage(power);
-        
-        // Apply slow effect - ensure this method is implemented in Critter class
         target->applySlowEffect(1.0f - slowEffect, slowDuration);
-        
-        // Draw slow attack effect
-        DrawLineEx(position, target->getPosition(), 2.0f, YELLOW);
-        DrawCircleV(target->getPosition(), 15, ColorAlpha(SKYBLUE, 0.3f));
         
         resetShotTimer();
     }
@@ -176,6 +266,20 @@ void SniperTower::attackCritters(std::vector<Critter>& critters) {
     
     // Use targeting strategy to select a target
     Critter* target = targetingStrategy->selectTarget(critters, position, range);
+
+    if (target) {
+        // Create slow projectile
+        TowerShot shot;
+        shot.start = position;
+        shot.end = target->getPosition();
+        shot.currentPos = position;
+        shot.speed = 700.0f; // Slower for slow tower
+        shot.color = PURPLE;
+        shot.timer = 0.6f;
+        shot.hit = false;
+        activeShots.push_back(shot);
+    }
+
     
     if (target) {
         // Calculate if critical hit occurs

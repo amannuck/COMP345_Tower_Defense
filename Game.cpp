@@ -1,11 +1,11 @@
 // Game.cpp
 #include "Game.h"
-
+#include "Tower.h"
 #include <iostream>
 #include <memory>
 #include <ostream>
 
-Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSize(0), isEditingWidth(true), currentWave(0), lives(5) {
+Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSize(0), isEditingWidth(true), currentWave(0), lives(10) {
     widthInput = "";
     heightInput = "";
     mapSizes = {
@@ -13,7 +13,7 @@ Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSiz
         {14, 14},
         {16, 16},
     };
-    towerManager = std::make_unique<TowerManager>(1000);
+    towerManager = std::make_unique<TowerManager>(500);
     critterWave = nullptr;
     mapEditor = nullptr;
 }
@@ -23,6 +23,43 @@ Game::~Game() {
     currentMap = nullptr;
     mapEditor = nullptr;  // Clean up mapEditor
 }
+
+void Game::showWaveNotification() {
+    waveNotification.waveNumber = currentWave + 1; // Show next wave number
+    waveNotification.timer = 2.0f; // Show for 2 seconds
+    waveNotification.fadeDuration = 1.5f; // Start fading after 0.5 seconds
+}
+
+void Game::updateWaveNotification() {
+    if (waveNotification.timer > 0) {
+        waveNotification.timer -= GetFrameTime();
+    }
+}
+
+void Game::drawWaveNotification() const {
+    if (waveNotification.timer <= 0) return;
+
+    // Calculate alpha (opacity) based on timer
+    float alpha = 1.0f;
+    if (waveNotification.timer < waveNotification.fadeDuration) {
+        alpha = waveNotification.timer / waveNotification.fadeDuration;
+    }
+
+    std::string waveText = "Wave " + std::to_string(waveNotification.waveNumber);
+    int fontSize = 80;
+    Color textColor = { 255, 215, 0, static_cast<unsigned char>(255 * alpha) }; // Gold color with fade
+
+    // Center the text
+    Vector2 textPos = {
+        (GetScreenWidth() - MeasureText(waveText.c_str(), fontSize)) / 2.0f,
+        (GetScreenHeight() - fontSize) / 2.0f
+    };
+
+    // Draw text with shadow for better visibility
+    DrawText(waveText.c_str(), textPos.x + 2, textPos.y + 2, fontSize, { 0, 0, 0, static_cast<unsigned char>(128 * alpha) });
+    DrawText(waveText.c_str(), textPos.x, textPos.y, fontSize, textColor);
+}
+
 
 void Game::drawTowerMenu() const {
     // Draw bank balance at top left
@@ -43,7 +80,7 @@ void Game::drawTowerMenu() const {
     const int buttonHeight = 80;
     const int padding = 20;
     const int startY = GetScreenHeight() - buttonHeight - (towerMenuHeight - buttonHeight) / 2;
-    const int totalWidth = (buttonWidth + padding) * 4 - padding;
+    const int totalWidth = (buttonWidth + padding) * 3 - padding;
     int startX = (GetScreenWidth() - totalWidth) / 2;
 
     struct TowerOption {
@@ -72,9 +109,9 @@ void Game::drawTowerMenu() const {
         // Button background
         Color buttonColor = options[i].color;
         if (selectedTowerType == options[i].type) {
-            buttonColor.a = 255;  // Selected tower
+            buttonColor.a = 285;  // Selected tower
         } else if (!towerManager->canAffordTower(options[i].type)) {
-            buttonColor.a = 100;  // Can't afford
+            buttonColor.a = 50;  // Can't afford
         } else {
             buttonColor.a = 200;  // Normal state
         }
@@ -441,6 +478,7 @@ void Game::handleMapSelection() {
 }
 
 void Game::update() {
+    updateWaveNotification();
     switch (state) {
         case GameState::MAP_SELECTION:
         case GameState::MAP_EDITING:
@@ -448,6 +486,8 @@ void Game::update() {
             break;
 
         case GameState::PLAYING: {
+            UpdateTowerShots(GetFrameTime());
+
             Vector2 mousePos = GetMousePosition();
             bool processed = false;
 
@@ -514,7 +554,7 @@ void Game::update() {
                 
                 // Reset wave counter and possibly reset player's currency
                 currentWave = 0;
-                towerManager = std::make_unique<TowerManager>(1000);
+                towerManager = std::make_unique<TowerManager>(500);
                 
                 // Clear any existing critters or towers
                 critterWave = nullptr;
@@ -533,6 +573,17 @@ void Game::update() {
     }
 }
 
+bool Game::hasActiveCritters() const {
+    if (!critterWave) return false;
+
+    for (const auto& critter : critterWave->getCritters()) {
+        // Check if critter is active AND not dead AND hasn't reached end
+        if (critter.isActive() && !critter.isDead() && !critter.reachedEnd()) {
+            return true;
+        }
+    }
+    return false;
+}
 
 void Game::updateTowers() {
     for (const auto& tower : towerManager->getTowers()) {
@@ -654,7 +705,7 @@ void Game::draw() const {
                 }
                 tower->draw();
             }
-
+            DrawTowerShots();
             // Draw critters
             if (critterWave && !critterWave->getCritters().empty()) {
                 critterWave->draw();
@@ -670,8 +721,6 @@ void Game::draw() const {
             } else {
                 drawSideMenuDefault(); // Draw default content when no tower is selected
             }
-
-            drawTowerShots();
             drawTowerMenu();
 
             // Draw selection instruction if tower type is selected
@@ -679,6 +728,7 @@ void Game::draw() const {
                 DrawText("Click to place tower (Right click to cancel)",
                         (GetScreenWidth() - sideMenuWidth) / 2 - 100, 20, 20, BLACK);
             }
+            drawWaveNotification();
             break;
         }
             
@@ -728,7 +778,6 @@ void Game::drawSideMenu() const {
     DrawText("Tower Info", menuRect.x + 10, 20, 24, BLACK);
 }
 
-// Game.cpp
 void Game::handleSideMenuButtonClick(Vector2 mousePos) {
     Rectangle buttonRect = {
         static_cast<float>(GetScreenWidth() - sideMenuWidth + 10),
@@ -738,37 +787,58 @@ void Game::handleSideMenuButtonClick(Vector2 mousePos) {
     };
 
     if (CheckCollisionPointRec(mousePos, buttonRect)) {
-        startNextWave();
+        // Only start next wave if no active critters
+        if (!hasActiveCritters()) {
+            startNextWave();
+        }
+        else {
+            // Optionally: Show a message to the player
+            std::cout << "Cannot start next wave while critters are still active!" << std::endl;
+        }
     }
 }
 
 void Game::drawSideMenuButton() const {
     // Define the button rectangle
     Rectangle buttonRect = {
-        static_cast<float>(GetScreenWidth() - sideMenuWidth + 10),  // 10 pixels from the left edge of the side menu
-        static_cast<float>(GetScreenHeight() - towerMenuHeight - 60),  // 60 pixels from the bottom of the side menu
-        static_cast<float>(sideMenuWidth - 20),  // Button width (side menu width minus 20 pixels for padding)
-        50  // Button height
+        static_cast<float>(GetScreenWidth() - sideMenuWidth + 10),
+        static_cast<float>(GetScreenHeight() - towerMenuHeight - 60),
+        static_cast<float>(sideMenuWidth - 20),
+        50
     };
 
-    // Check if the mouse is hovering over the button
+    // Check if the mouse is hovering over the button and if wave can be started
     bool isHovered = CheckCollisionPointRec(GetMousePosition(), buttonRect);
+    bool canStartWave = !hasActiveCritters();
 
     // Draw the button background
-    Color buttonColor = isHovered ? SKYBLUE : BLUE;
-    DrawRectangleRec(buttonRect, buttonColor);
+    Color buttonColor;
+    if (canStartWave) {
+        buttonColor = isHovered ? SKYBLUE : BLUE;
+    } else {
+        buttonColor = GRAY; // Disabled color
+    }
 
-    // Draw the button border
-    DrawRectangleLinesEx(buttonRect, 2, isHovered ? WHITE : BLACK);
+    DrawRectangleRec(buttonRect, buttonColor);
+    DrawRectangleLinesEx(buttonRect, 2, isHovered && canStartWave ? WHITE : BLACK);
 
     // Draw the button text
     const char* buttonText = "Next Wave";
     int fontSize = 20;
     float textWidth = MeasureText(buttonText, fontSize);
+
+    // Use different text color based on button state
+    Color textColor = canStartWave ? WHITE : DARKGRAY;
     DrawText(buttonText,
              buttonRect.x + (buttonRect.width - textWidth) / 2,
              buttonRect.y + (buttonRect.height - fontSize) / 2,
-             fontSize, WHITE);
+             fontSize, textColor);
+
+    // Draw a tooltip if hovering over a disabled button
+    if (isHovered && !canStartWave) {
+        const char* tooltip = "Clear all critters first!";
+        DrawText(tooltip, buttonRect.x, buttonRect.y - 25, 15, RED);
+    }
 }
 
 void Game::drawSideMenuDefault() const {
@@ -806,8 +876,12 @@ void Game::onCritterReachedEnd(const Critter& critter) {
 
     // Deduct currency based on critter's strength
     int penalty = critter.getStrength() * 10; // Multiply by 10 to make the penalty more significant
-    towerManager->addCurrency(-penalty); // Using addCurrency with a negative value to deduct
-
+    int result = towerManager->getCurrency() - penalty;
+    if (result < 0) {
+        towerManager->addCurrency(0);
+    } else {
+        towerManager->addCurrency(-penalty);
+    }
     std::cout << "Critter reached the end. Player loses " << penalty << " gold and 1 life! Lives remaining: " << lives << std::endl;
 
     // Add visual notification at the critter's position
@@ -833,14 +907,22 @@ void Game::addRewardNotification(const Vector2& position, int amount) {
 }
 
 void Game::startNextWave() {
-    // Ensure the map is initialized and has a path
+    if (hasActiveCritters()) {
+    std::cout << "Cannot start wave - active critters remain" << std::endl;
+    return;
+    }
+
+    showWaveNotification();
+
+    // Clear the previous wave if it exists
+    if (critterWave) {
+        critterWave.reset(); // This will delete the current wave
+    }
+
     if (currentMap && !currentMap->getPath().empty()) {
         // Increment the current wave number
         currentWave++;
-        
-        // Reset lives at the start of each new wave
-        resetLives();
-        
+
         // Calculate cell size and offsets
         int gameAreaHeight = GetScreenHeight() - towerMenuHeight;
         int gameAreaWidth = GetScreenWidth() - sideMenuWidth;
@@ -859,18 +941,29 @@ void Game::startNextWave() {
             screenPath.push_back(screenPoint);
         }
 
+        // Create the appropriate factory based on wave level
+        auto factory = CritterFactoryCreator::createFactory(currentWave);
+
+        // Determine number of critters based on wave level
+        int critterCount = 5 + (currentWave * 2); // Example scaling formula
+
+        // Create the wave of critters using the factory
+        std::vector<Critter> critters = factory->createWave(screenPath, critterCount);
+
+        // Initialize the critter wave with the created critters
         critterWave = std::make_unique<CritterWave>(currentWave, screenPath, cellSize, offsetX, offsetY);
 
-        // Register the game as an observer for each critter
+        // Add the created critters to the wave
         for (auto& critter : critterWave->getCritters()) {
+
+            // Register the game as an observer for each critter
             critter.addObserver(this);
         }
     } else {
         std::cerr << "ERROR: No map or path available to spawn critters." << std::endl;
     }
 }
-
 void Game::resetLives() {
-    lives = 5;
+    lives = 10;
     std::cout << "Lives reset to " << lives << std::endl;
 }

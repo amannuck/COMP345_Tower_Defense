@@ -80,6 +80,21 @@ public:
     void setPosition(Vector2 pos) override { position = pos; }
     bool canShoot() const override;
     void resetShotTimer() override;
+
+
+};
+
+void UpdateTowerShots(float deltaTime);
+void DrawTowerShots();
+
+struct TowerShot {
+    Vector2 start;
+    Vector2 end;
+    Vector2 currentPos;
+    float speed;
+    Color color;
+    float timer;
+    bool hit;
 };
 
 // Concrete Towers - These remain mostly the same
