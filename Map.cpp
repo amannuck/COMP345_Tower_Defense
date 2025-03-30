@@ -182,6 +182,16 @@ bool Map::validateMap() const {
     return true;
 }
 
+Map::Map(const Map& other) :
+    width(other.width),
+    height(other.height),
+    grid(other.grid),
+    entryPoint(other.entryPoint),
+    exitPoint(other.exitPoint),
+    CELL_SIZE(other.CELL_SIZE),
+    path(other.path) {
+}
+
 void Map::setPath(const std::vector<Vector2>& path) {
     this->path = path;
 }

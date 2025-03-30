@@ -22,6 +22,7 @@ public:
     void removeDeadCritters();
     void update(float deltaTime);
     void draw() const;
+    void removeExitedCritters(); 
     bool allCrittersDefeated() const;
     std::vector<Critter>& getCritters();
     bool isStillSpawning() const { return currentCritterIndex < critters.size(); }

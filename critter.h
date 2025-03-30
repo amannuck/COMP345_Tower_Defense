@@ -1,5 +1,7 @@
+// Critter.h
 #pragma once
 #include <vector>
+#include <string>
 #include "raylib.h"
 #include "CritterObserver.h"
 
@@ -14,18 +16,20 @@ private:
     int pathIndex;
     bool active;
     bool reachedEndFlag = false;
+    std::string type;  // New: Type of critter (Basic, Fast, Tank, Boss)
     
-    // Add slow effect variables
-    float slowFactor = 1.0f;  // 1.0 = normal speed, less than 1 = slowed
-    float slowDuration = 0.0f;  // Duration of slow effect
+    // Slow effect variables
+    float slowFactor = 1.0f;
+    float slowDuration = 0.0f;
 
-    std::vector<CritterObserver*> observers;  // List of observers
+    std::vector<CritterObserver*> observers;
 
 public:
-    Critter(int level, float speed, float hp, int reward, int strength, const std::vector<Vector2>& path);
+    // Updated constructor to include type
+    Critter(int level, float speed, float hp, int reward, int strength, 
+            const std::vector<Vector2>& path, const std::string& type);
 
     void setPosition(const Vector2 &gridPos, int cellSize, int offsetX, int offsetY);
-
     void move();
     void takeDamage(float damage);
     bool isDead() const;
@@ -41,8 +45,9 @@ public:
     int getStrength() const { return strength; }
     float getHitPoints() const { return hitPoints; }
     int getPathIndex() const { return pathIndex; }
+    const std::string& getType() const { return type; }  // New: Get critter type
     
-    // Add slow effect method
+    // Slow effect method
     void applySlowEffect(float factor, float duration);
 
     // Observer management

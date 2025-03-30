@@ -34,6 +34,7 @@ private:
 
 public:
     Map(int w, int h);
+    Map(const Map& other);
     CellType getCellType(int x, int y) const;
     bool placeTower(int x, int y);
     void draw(int offsetX = 0, int offsetY = 0, int cellSize = 0) const;

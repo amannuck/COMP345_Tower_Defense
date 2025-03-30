@@ -8,6 +8,7 @@
 #include "MapEditor.h"  // Include MapEditor header
 
 enum class GameState {
+    MAP_PRESET_SELECTION,  // New state for preset selection
     MAP_SELECTION,
     MAP_EDITING,
     PLAYING,
@@ -20,6 +21,8 @@ private:
     GameState state;
     Map* currentMap;
     std::vector<std::pair<int, int>> mapSizes;
+    std::vector<std::unique_ptr<Map>> presetMaps;  // Store preset maps
+    int selectedPresetIndex = 0;
     int selectedSize;
     std::string widthInput;  // Stores the width input as a string
     std::string heightInput; // Stores the height input as a string
@@ -88,6 +91,9 @@ public:
     void updateWaveNotification();
 
     void drawWaveNotification() const;
+    void generatePresetMaps();  // Function to generate preset maps
+    void drawPresetSelection() const;  // Function to draw preset selection screen
+    void handlePresetSelection();
 
     void update();
     void draw() const;

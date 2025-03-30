@@ -5,7 +5,7 @@
 #include <memory>
 #include <ostream>
 
-Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSize(0), isEditingWidth(true), currentWave(0), lives(10) {
+Game::Game() : state(GameState::MAP_PRESET_SELECTION), currentMap(nullptr), selectedSize(0), isEditingWidth(true), currentWave(0), lives(10) {
     widthInput = "";
     heightInput = "";
     mapSizes = {
@@ -16,6 +16,8 @@ Game::Game() : state(GameState::MAP_SELECTION), currentMap(nullptr), selectedSiz
     towerManager = std::make_unique<TowerManager>(500);
     critterWave = nullptr;
     mapEditor = nullptr;
+
+    generatePresetMaps();  // Generate preset maps when game starts
 }
 
 Game::~Game() {
@@ -30,9 +32,149 @@ void Game::showWaveNotification() {
     waveNotification.fadeDuration = 1.5f; // Start fading after 0.5 seconds
 }
 
+void Game::generatePresetMaps() {
+    presetMaps.clear();
+
+    // Preset 1: Simple straight path
+    auto map1 = std::make_unique<Map>(10, 10);
+    for (int x = 0; x < 10; x++) {
+        map1->setCellType(x, 5, CellType::PATH);
+    }
+    map1->setCellType(0, 5, CellType::ENTRY);
+    map1->setCellType(9, 5, CellType::EXIT);
+    map1->calculatePath();
+    presetMaps.push_back(std::move(map1));
+
+    // Preset 2: Zigzag path
+    auto map2 = std::make_unique<Map>(12, 12);
+    for (int x = 0; x < 6; x++) {
+        map2->setCellType(x, 3, CellType::PATH);
+    }
+    for (int y = 3; y < 9; y++) {
+        map2->setCellType(5, y, CellType::PATH);
+    }
+    for (int x = 5; x < 12; x++) {
+        map2->setCellType(x, 8, CellType::PATH);
+    }
+    map2->setCellType(0, 3, CellType::ENTRY);
+    map2->setCellType(11, 8, CellType::EXIT);
+    map2->calculatePath();
+    presetMaps.push_back(std::move(map2));
+
+    // Preset 3: Spiral path
+    auto map3 = std::make_unique<Map>(14, 14);
+    for (int x = 0; x < 10; x++) map3->setCellType(x, 0, CellType::PATH);
+    for (int y = 0; y < 10; y++) map3->setCellType(9, y, CellType::PATH);
+    for (int x = 9; x > 3; x--) map3->setCellType(x, 9, CellType::PATH);
+    for (int y = 9; y > 3; y--) map3->setCellType(4, y, CellType::PATH);
+    for (int x = 4; x < 10; x++) map3->setCellType(x, 4, CellType::PATH);
+    map3->setCellType(0, 0, CellType::ENTRY);
+    map3->setCellType(9, 4, CellType::EXIT);
+    map3->calculatePath();
+    presetMaps.push_back(std::move(map3));
+
+    // Preset 4: Large open map with winding path
+    auto map4 = std::make_unique<Map>(16, 16);
+    for (int y = 2; y < 14; y++) map4->setCellType(2, y, CellType::PATH);
+    for (int x = 2; x < 14; x++) map4->setCellType(x, 13, CellType::PATH);
+    for (int y = 13; y > 5; y--) map4->setCellType(13, y, CellType::PATH);
+    for (int x = 13; x > 5; x--) map4->setCellType(x, 6, CellType::PATH);
+    map4->setCellType(2, 2, CellType::ENTRY);
+    map4->setCellType(6, 6, CellType::EXIT);
+    map4->calculatePath();
+    presetMaps.push_back(std::move(map4));
+}
+
+
 void Game::updateWaveNotification() {
     if (waveNotification.timer > 0) {
         waveNotification.timer -= GetFrameTime();
+    }
+}
+
+void Game::drawPresetSelection() const {
+    // Draw title
+    const char* title = "Select a Map";
+    int titleFontSize = 40;
+    Vector2 titlePos = {
+        (GetScreenWidth() - MeasureText(title, titleFontSize)) / 2.0f,
+        50
+    };
+    DrawText(title, titlePos.x, titlePos.y, titleFontSize, BLACK);
+
+    // Draw map preview
+    if (!presetMaps.empty()) {
+        int previewSize = std::min(GetScreenWidth() * 0.7f, GetScreenHeight() * 0.6f);
+        int cellSize = previewSize / presetMaps[selectedPresetIndex]->getWidth();
+        int offsetX = (GetScreenWidth() - (presetMaps[selectedPresetIndex]->getWidth() * cellSize)) / 2;
+        int offsetY = (GetScreenHeight() - (presetMaps[selectedPresetIndex]->getHeight() * cellSize)) / 2;
+
+        presetMaps[selectedPresetIndex]->draw(offsetX, offsetY, cellSize);
+
+        // Draw map name/number
+        std::string mapName = "Map " + std::to_string(selectedPresetIndex + 1);
+        DrawText(mapName.c_str(), offsetX, offsetY - 40, 30, BLACK);
+    }
+
+    // Draw navigation buttons
+    const char* leftArrow = "<";
+    const char* rightArrow = ">";
+    int arrowSize = 50;
+
+    // Left arrow
+    if (selectedPresetIndex > 0) {
+        DrawText(leftArrow, 50, GetScreenHeight() / 2, arrowSize, BLACK);
+    } else {
+        DrawText(leftArrow, 50, GetScreenHeight() / 2, arrowSize, GRAY);
+    }
+
+    // Right arrow
+    if (selectedPresetIndex < presetMaps.size() - 1) {
+        DrawText(rightArrow, GetScreenWidth() - 80, GetScreenHeight() / 2, arrowSize, BLACK);
+    } else {
+        DrawText(rightArrow, GetScreenWidth() - 80, GetScreenHeight() / 2, arrowSize, GRAY);
+    }
+
+    // Draw instructions
+    const char* instructions1 = "Use LEFT/RIGHT arrows to select a map";
+    const char* instructions2 = "Press ENTER to confirm selection";
+    const char* instructions3 = "Press C to create a custom map";
+
+    int instructionSize = 20;
+    DrawText(instructions1, (GetScreenWidth() - MeasureText(instructions1, instructionSize)) / 2,
+             GetScreenHeight() - 100, instructionSize, DARKGRAY);
+    DrawText(instructions2, (GetScreenWidth() - MeasureText(instructions2, instructionSize)) / 2,
+             GetScreenHeight() - 70, instructionSize, DARKGRAY);
+    DrawText(instructions3, (GetScreenWidth() - MeasureText(instructions3, instructionSize)) / 2,
+             GetScreenHeight() - 40, instructionSize, DARKGRAY);
+}
+
+void Game::handlePresetSelection() {
+    // Handle left arrow key
+    if (IsKeyPressed(KEY_LEFT)) {
+        if (selectedPresetIndex > 0) {
+            selectedPresetIndex--;
+        }
+    }
+
+    // Handle right arrow key
+    if (IsKeyPressed(KEY_RIGHT)) {
+        if (selectedPresetIndex < presetMaps.size() - 1) {
+            selectedPresetIndex++;
+        }
+    }
+
+    // Handle enter key
+    if (IsKeyPressed(KEY_ENTER)) {
+        if (!presetMaps.empty()) {
+            currentMap = new Map(*presetMaps[selectedPresetIndex].get());
+            state = GameState::PLAYING;
+        }
+    }
+
+    // Handle C key for custom map
+    if (IsKeyPressed(KEY_C)) {
+        state = GameState::MAP_SELECTION;
     }
 }
 
@@ -480,6 +622,9 @@ void Game::handleMapSelection() {
 void Game::update() {
     updateWaveNotification();
     switch (state) {
+        case GameState::MAP_PRESET_SELECTION:
+            handlePresetSelection();
+        break;
         case GameState::MAP_SELECTION:
         case GameState::MAP_EDITING:
             handleMapSelection();
@@ -677,6 +822,10 @@ void Game::drawGameOver() const {
 
 void Game::draw() const {
     switch (state) {
+        case GameState::MAP_PRESET_SELECTION:
+            drawPresetSelection();
+            break;
+
         case GameState::MAP_SELECTION:
             drawMapSelection();
             break;
@@ -908,15 +1057,15 @@ void Game::addRewardNotification(const Vector2& position, int amount) {
 
 void Game::startNextWave() {
     if (hasActiveCritters()) {
-    std::cout << "Cannot start wave - active critters remain" << std::endl;
-    return;
+        std::cout << "Cannot start wave - active critters remain" << std::endl;
+        return;
     }
 
     showWaveNotification();
 
     // Clear the previous wave if it exists
     if (critterWave) {
-        critterWave.reset(); // This will delete the current wave
+        critterWave.reset();
     }
 
     if (currentMap && !currentMap->getPath().empty()) {
@@ -945,7 +1094,14 @@ void Game::startNextWave() {
         auto factory = CritterFactoryCreator::createFactory(currentWave);
 
         // Determine number of critters based on wave level
-        int critterCount = 5 + (currentWave * 2); // Example scaling formula
+        int baseCount = 5;
+        int scalingFactor = 2;
+        int critterCount = baseCount + (currentWave * scalingFactor);
+
+        // Add more critters for milestone waves
+        if (currentWave % 5 == 0) {
+            critterCount += 10;
+        }
 
         // Create the wave of critters using the factory
         std::vector<Critter> critters = factory->createWave(screenPath, critterCount);
@@ -955,8 +1111,6 @@ void Game::startNextWave() {
 
         // Add the created critters to the wave
         for (auto& critter : critterWave->getCritters()) {
-
-            // Register the game as an observer for each critter
             critter.addObserver(this);
         }
     } else {
