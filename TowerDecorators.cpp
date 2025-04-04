@@ -1,7 +1,21 @@
-// TowerDecorators.cpp
+/**
+ * @file TowerDecorators.cpp
+ * @brief Implementation of tower decorator classes
+ * @details This file provides the implementation for the decorator classes that
+ *          enhance tower functionality using the Decorator pattern. It includes
+ *          splash damage, burning effect, and freezing effect decorators.
+ */
+
 #include "Tower.h"
 #include "raymath.h"
-// SplashDecorator implementation
+
+/**
+ * @brief Implements the enhanced attack with splash damage
+ * @param critters Vector of critters to potentially target
+ * @details Finds a primary target, applies normal damage to it, and then
+ *          applies reduced splash damage to all critters within the splash radius.
+ *          Also renders visual effects for the splash area.
+ */
 void SplashDecorator::attackCritters(std::vector<Critter>& critters) {
     if (!wrappedTower->canShoot()) return;
     
@@ -53,7 +67,14 @@ void SplashDecorator::attackCritters(std::vector<Critter>& critters) {
     }
 }
 
-// BurningDecorator implementation
+/**
+ * @brief Implements the enhanced attack with burning effect
+ * @param critters Vector of critters to potentially target
+ * @details Processes damage over time for critters already affected by burning,
+ *          lets the wrapped tower perform its normal attack, and then applies
+ *          the burning effect to newly targeted critters. Renders visual effects
+ *          for burning critters.
+ */
 void BurningDecorator::attackCritters(std::vector<Critter>& critters) {
     // Process burning damage on already burning critters
     float deltaTime = GetFrameTime();
@@ -109,7 +130,12 @@ void BurningDecorator::attackCritters(std::vector<Critter>& critters) {
     }
 }
 
-// FreezingDecorator implementation
+/**
+ * @brief Implements the enhanced attack with freezing effect
+ * @param critters Vector of critters to potentially target
+ * @details Finds a target, applies normal damage, and then applies a movement
+ *          speed reduction effect. Renders visual effects for the freeze attack.
+ */
 void FreezingDecorator::attackCritters(std::vector<Critter>& critters) {
     // First let the wrapped tower do its normal attack
     if (!wrappedTower->canShoot()) return;
